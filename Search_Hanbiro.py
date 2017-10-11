@@ -1,6 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
+import re
 
 def search_hanbiro_main():
     # 한비로 로그인 주소
@@ -31,11 +32,6 @@ def search_hanbiro_main():
         return
     else:
         print('로그인 성공!!')
-        # 웹페이지 소스 추출
-        get_html = driver.page_source
-        # HTML 소스 읽어오기
-        get_parser = BeautifulSoup(get_html, 'html.parser')
-
         # 입력 날짜를 년/월 분리
         inout_year = '2016'
         inout_day = '04'
@@ -48,10 +44,50 @@ def search_hanbiro_main():
         # 검색
         driver.find_element_by_xpath('//*[@id="monthTerm"]/form/table/tbody/tr/td[2]/input').click()
 
-        # 출근 정보 태그
-        # get_tag = get_parser.find_all('img')
+        # 웹페이지 소스 추출
+        get_html = driver.page_source
+        # HTML 소스 읽어오기
+        get_parser = BeautifulSoup(get_html, 'html.parser')
+
+        # 태그를 통한 일자와 근태 내용 가져오기
+        get_tag_info = get_parser.find_all('tr', height = '26')
+        get_day_info = []
+        for loopidx in range(0, get_tag_info.__len__()):
+            get_day_info.append(get_tag_info[loopidx].contents)
+
+        # 일자 저장
+        store_day_info = []
+        # 출근체크 저장
+        store_check_info = []
+        for loopjdx in range(0, get_day_info.__len__()):
+            store_day_info.append(get_day_info[loopjdx][1].text)
+            store_check_info.append(get_day_info[loopjdx][3].text)
+            store_check_info[loopjdx] = store_check_info[loopjdx].replace('\t','')
+            store_check_info[loopjdx] = store_check_info[loopjdx].replace('\n', '')
+            store_check_info[loopjdx] = store_check_info[loopjdx].replace(' ', '')
+
+
+        get_check_day = []
+        get_check_time = []
+        # 정상퇴근 찾기
+        for loopidx in range(0, store_check_info.__len__()):
+            cur_text = store_check_info[loopidx]
+            find_index = cur_text.find('정상퇴근')
+            if find_index != -1:
+                # 정상퇴근을 찾으면 해당 날짜 저장
+                get_check_day.append(store_day_info[loopidx])
+
+                # 해당 시간 저장
+                cur_text = cur_text[find_index+5:find_index+10]
+                get_check_time.append(cur_text)
+
+    # HTML 파싱 끝(브라우져 종료)
+    driver.close()
+    return (get_check_day, get_check_time)
 
 
 # 메인
 if __name__  == "__main__":
-    search_hanbiro_main()
+    [get_check_day, get_check_time] = search_hanbiro_main()
+    print(get_check_day)
+    print(get_check_time)
