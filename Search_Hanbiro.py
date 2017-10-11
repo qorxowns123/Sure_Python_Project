@@ -14,7 +14,7 @@ driver.get(web_address)
 # 아이디 입력
 driver.find_element_by_name('hmail_id').send_keys('tjback123')
 # 비밀번호 입력
-driver.find_element_by_name('hmail_pass').send_keys('dowk0056')
+driver.find_element_by_name('hmail_pass').send_keys('xxxx')
 # 자동 로그인 시도
 driver.find_element_by_xpath('/html/body/form/table/tbody/tr[1]/td/table[1]/tbody/tr[2]/td/table/tbody/tr[2]/td[3]/table/tbody/tr/td').click()
 # 바로 접속하면 캘린더로 접속이 안되므로 3초의 여유를 둔다.
