@@ -43,12 +43,17 @@ def create_xls():
         worksheet.write(loopidx + 2, 1, item_list[loopidx], cell_format)
 
     menu_list = ['금액', '날짜/횟수', '내역']
-    for loopjdx in range(0, 2): # 나중에 이쪽 반복문을 고쳐야 할듯
+    week_time = 2
+    for loopjdx in range(0, week_time): # 나중에 이쪽 반복문을 고쳐야 할듯
         for loopkdx in range(0, menu_list.__len__()):
             if loopjdx == 0:
                 worksheet.write(1, loopkdx + 2, menu_list[loopkdx], cell_format)
+                for looppdx in range(2, 13):
+                    worksheet.write(looppdx, loopkdx + 2, '', cell_format)
             else:
                 worksheet.write(1, loopkdx + 5, menu_list[loopkdx], cell_format)
+                for looppdx in range(2, 13):
+                    worksheet.write(looppdx, loopkdx + 5, '', cell_format)
 
     workbook.close()
 

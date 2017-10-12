@@ -2,6 +2,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
 import re
+import Create_ExcelFile
 
 def search_hanbiro_main(sure_id, sure_pw):
     # 한비로 로그인 주소
@@ -85,7 +86,7 @@ def enter_calendar(driver, inout_year, inout_day):
 
     store_over_work_day = []
     store_over_work_time = []
-    store_over_work_range = []
+    store_over_work_money = []
     set_over_work_time = 18
     # 본사에서 8시 이후 퇴근한 날(다른 파견지도 넣을 예정)
     for loopmdx in range(0, get_check_time.__len__()):
@@ -95,17 +96,24 @@ def enter_calendar(driver, inout_year, inout_day):
         # 야근 했다면..
         if set_over_work_time < check_time:
             range_time = check_time - set_over_work_time
-            if range_time >= 2:
+            if (range_time >= 2 and range_time < 4):
                 store_over_work_day.append(get_check_day[loopmdx])
                 store_over_work_time.append(get_check_time[loopmdx])
-                str_range_time = str(range_time)
-                str_range_time = str_range_time + '시간'
-                store_over_work_range.append(str_range_time)
+                store_over_work_money.append('10,000')
+            elif (range_time >= 4 and range_time < 8):
+                store_over_work_day.append(get_check_day[loopmdx])
+                store_over_work_time.append(get_check_time[loopmdx])
+                store_over_work_money.append('20,000')
+            elif range_time >= 8:
+                store_over_work_day.append(get_check_day[loopmdx])
+                store_over_work_time.append(get_check_time[loopmdx])
+                store_over_work_money.append('40,000')
+            else:
+                pass
 
     # HTML 파싱 끝(브라우져 종료)
     driver.close()
-    return (store_over_work_day, store_over_work_time, store_over_work_range)
-
+    return (store_over_work_day, store_over_work_time, store_over_work_money)
 
 # 메인
 if __name__  == "__main__":
@@ -114,12 +122,14 @@ if __name__  == "__main__":
 
     if check_login != False:
         if option == '야근경비':
-            [store_over_work_day, store_over_work_time, store_over_work_range] = enter_calendar(driver, '2016', '01')
+            [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2016', '01')
             if not store_over_work_day:
                 print('야근한 날이 없습니다.')
             else:
                 # 엑셀 파싱 함수넣기
-                pass
+                print(store_over_work_day)
+                print(store_over_work_time)
+                print(store_over_work_money)
         else:
             # 옵션 더 추가..?
             pass
