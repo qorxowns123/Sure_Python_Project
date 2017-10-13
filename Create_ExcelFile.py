@@ -42,9 +42,10 @@ def create_xls():
         worksheet.write(loopidx + 2, 0, loopidx+1, cell_format)
         worksheet.write(loopidx + 2, 1, item_list[loopidx], cell_format)
 
+    # 아래 코드는 추후 UI를 반영하여 로직 수정 예정
     menu_list = ['금액', '날짜/횟수', '내역']
     week_time = 2
-    for loopjdx in range(0, week_time): # 나중에 이쪽 반복문을 고쳐야 할듯
+    for loopjdx in range(0, week_time): 
         for loopkdx in range(0, menu_list.__len__()):
             if loopjdx == 0:
                 worksheet.write(1, loopkdx + 2, menu_list[loopkdx], cell_format)
@@ -56,7 +57,16 @@ def create_xls():
                     worksheet.write(looppdx, loopkdx + 5, '', cell_format)
 
     workbook.close()
+    print('Excel 생성 완료...')
 
+'''
 # 메인
 if __name__  == "__main__":
-    create_xls()
+    list = ['1주차']
+    dict = {'day':'월', '시간':'10시'}
+    list.append(dict)
+    print(list)
+    dict = []
+    list.append(dict)
+    print(list)
+'''

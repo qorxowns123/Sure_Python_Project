@@ -60,69 +60,137 @@ def enter_calendar(driver, inout_year, inout_day):
         get_day_info.append(get_tag_info[loopidx].contents)
 
     # 일자 저장
-    store_day_info = []
+    store_day_info_temp = []
     # 출근체크 저장
-    store_check_info = []
+    store_check_info_temp = []
     for loopjdx in range(0, get_day_info.__len__()):
-        store_day_info.append(get_day_info[loopjdx][1].text)
-        store_check_info.append(get_day_info[loopjdx][3].text)
-        store_check_info[loopjdx] = store_check_info[loopjdx].replace('\t','')
-        store_check_info[loopjdx] = store_check_info[loopjdx].replace('\n', '')
-        store_check_info[loopjdx] = store_check_info[loopjdx].replace(' ', '')
+        store_day_info_temp.append(get_day_info[loopjdx][1].text)
+        store_check_info_temp.append(get_day_info[loopjdx][3].text)
+        store_check_info_temp[loopjdx] = store_check_info_temp[loopjdx].replace('\t','')
+        store_check_info_temp[loopjdx] = store_check_info_temp[loopjdx].replace('\n', '')
+        store_check_info_temp[loopjdx] = store_check_info_temp[loopjdx].replace(' ', '')
 
+    # 주차 정리
+    store_day_info = []
+    temp_store_day_info = []
+    store_check_info = []
+    temp_store_check_info = []
+
+    cnt = 1
+    week_mode = str(cnt) + '주차'
+    temp_store_day_info.append(week_mode)
+    temp_store_check_info.append(week_mode)
+
+    for looppdx in range(0, store_day_info_temp.__len__()):
+        if store_day_info_temp[looppdx][12] == '일':
+            cnt = cnt + 1
+            week_mode = str(cnt) + '주차'
+
+            store_day_info.append(temp_store_day_info)
+            temp_store_day_info = []
+            temp_store_day_info.append(week_mode)
+            temp_store_day_info.append(store_day_info_temp[looppdx])
+
+            store_check_info.append(temp_store_check_info)
+            temp_store_check_info = []
+            temp_store_check_info.append(week_mode)
+            temp_store_check_info.append(store_check_info_temp[looppdx])
+        else:
+            temp_store_day_info.append(store_day_info_temp[looppdx])
+            temp_store_check_info.append(store_check_info_temp[looppdx])
+
+    store_day_info.append(temp_store_day_info)
+    store_check_info.append(temp_store_check_info)
+
+    # store_day_info.__len__() # 리스트 전체 갯수
+    # store_day_info[0].__len__() # 0번째 리스트 개수
 
     get_check_day = []
-    get_check_time = []
+    get_check_info = []
+
     # 정상퇴근 찾기
     for loopkdx in range(0, store_check_info.__len__()):
-        cur_text = store_check_info[loopkdx]
-        find_index = cur_text.find('정상퇴근')
-        if find_index != -1:
-            # 정상퇴근을 찾으면 해당 날짜 저장
-            get_check_day.append(store_day_info[loopkdx])
-            # 해당 시간 저장
-            cur_text = cur_text[find_index+5:find_index+10]
-            get_check_time.append(cur_text)
+
+        get_check_day_temp = []
+        get_check_info_temp = []
+
+        get_check_day_temp.append(store_day_info[loopkdx][0])
+        get_check_info_temp.append(store_check_info[loopkdx][0])
+
+        get_check_day.append(get_check_day_temp)
+        get_check_info.append(get_check_info_temp)
+
+        for loopldx in range(1, store_check_info[loopkdx].__len__()):
+            cur_text = store_check_info[loopkdx][loopldx]
+            find_index = cur_text.find('정상퇴근')
+            if find_index != -1:
+                # 정상퇴근을 찾으면 해당 날짜 저장
+                get_check_day_temp.append(store_day_info[loopkdx][loopldx])
+                # 해당 시간 저장
+                cur_text = cur_text[find_index + 5:find_index + 10]
+                get_check_info_temp.append(cur_text)
 
     store_over_work_day = []
     store_over_work_time = []
     store_over_work_money = []
     set_over_work_time = 18
-    # 본사에서 8시 이후 퇴근한 날(다른 파견지도 넣을 예정)
-    for loopmdx in range(0, get_check_time.__len__()):
-        check_time = get_check_time[loopmdx] #'19:23'
-        check_time = check_time[0:2] #'19'
-        check_time = int(check_time) #19
-        # 야근 했다면..
-        if set_over_work_time < check_time:
-            range_time = check_time - set_over_work_time
-            if (range_time >= 2 and range_time < 4):
-                store_over_work_day.append(get_check_day[loopmdx])
-                store_over_work_time.append(get_check_time[loopmdx])
-                store_over_work_money.append('10,000')
-            elif (range_time >= 4 and range_time < 8):
-                store_over_work_day.append(get_check_day[loopmdx])
-                store_over_work_time.append(get_check_time[loopmdx])
-                store_over_work_money.append('20,000')
-            elif range_time >= 8:
-                store_over_work_day.append(get_check_day[loopmdx])
-                store_over_work_time.append(get_check_time[loopmdx])
-                store_over_work_money.append('40,000')
-            else:
-                pass
 
-    # HTML 파싱 끝(브라우져 종료)
+    store_over_work_day_temp = []
+    store_over_work_time_temp = []
+    store_over_work_money_temp = []
+
+    #본사에서 8시 이후 퇴근한 날
+    for loopmdx in range(0, get_check_info.__len__()):
+        if not store_over_work_day_temp:
+            pass
+        else:
+            store_over_work_day.append(store_over_work_day_temp)
+            store_over_work_time.append(store_over_work_time_temp)
+            store_over_work_money.append(store_over_work_money_temp)
+
+            store_over_work_day_temp = []
+            store_over_work_time_temp = []
+            store_over_work_money_temp = []
+
+        if get_check_info[loopmdx].__len__() == 1:
+            continue
+        else:
+            for loopndx in range(1, get_check_info[loopmdx].__len__()):
+                check_time = get_check_info[loopmdx][loopndx]  # '19:23'
+                check_time = check_time[0:2]  # '19'
+                check_time = int(check_time)  # 19
+
+                # 야근 했다면..
+                if set_over_work_time < check_time:
+                    range_time = check_time - set_over_work_time
+                    store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ? 주차
+                    store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
+
+                    store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
+                    store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
+
+                    store_over_work_money_temp.append(get_check_info[loopmdx][0])
+                    if (range_time >= 2 and range_time < 4):
+                        store_over_work_money_temp.append('10,000')
+                    elif (range_time >= 4 and range_time < 8):
+                        store_over_work_money_temp.append('20,000')
+                    elif range_time >= 8:
+                        store_over_work_money_temp.append('40,000')
+                    else:
+                        pass
+
+    # HTML 파싱 끝(브라우저 종료)
     driver.close()
     return (store_over_work_day, store_over_work_time, store_over_work_money)
 
 # 메인
 if __name__  == "__main__":
     option = '야근경비'
-    [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
+    [check_login, driver] = search_hanbiro_main('tjback123', 'dowk0056')
 
     if check_login != False:
         if option == '야근경비':
-            [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2016', '01')
+            [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2017', '10')
             if not store_over_work_day:
                 print('야근한 날이 없습니다.')
             else:
@@ -130,6 +198,7 @@ if __name__  == "__main__":
                 print(store_over_work_day)
                 print(store_over_work_time)
                 print(store_over_work_money)
+                Create_ExcelFile.create_xls()
         else:
             # 옵션 더 추가..?
             pass
