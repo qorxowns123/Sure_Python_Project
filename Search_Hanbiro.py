@@ -194,7 +194,7 @@ def enter_calendar(driver, inout_year, inout_day):
 # 메인
 if __name__  == "__main__":
     option = '야근경비'
-    [check_login, driver] = search_hanbiro_main('tjback123', 'dowk0056')
+    [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
 
     if check_login != False:
         if option == '야근경비':
