@@ -179,6 +179,14 @@ def enter_calendar(driver, inout_year, inout_day):
                     else:
                         pass
 
+    for looopqdx in range(0, store_over_work_time.__len__()):
+        for loopwdx in range(1, store_over_work_time[looopqdx].__len__()):
+            fix_text = store_over_work_time[looopqdx][loopwdx]
+            fix_text = fix_text[5:] # 01-06 (수)
+            fix_text = fix_text[0:5]
+            fix_text = fix_text[0:2] + '월' + fix_text[3:5] + '일'
+            store_over_work_time[looopqdx][loopwdx] = fix_text
+
     # HTML 파싱 끝(브라우저 종료)
     driver.close()
     return (store_over_work_day, store_over_work_time, store_over_work_money)
@@ -191,14 +199,14 @@ if __name__  == "__main__":
     if check_login != False:
         if option == '야근경비':
             [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2017', '10')
-            if not store_over_work_day:
+            if store_over_work_day[0].__len__() == 1:
                 print('야근한 날이 없습니다.')
             else:
                 # 엑셀 파싱 함수넣기
                 print(store_over_work_day)
                 print(store_over_work_time)
                 print(store_over_work_money)
-                Create_ExcelFile.create_xls()
+                Create_ExcelFile.create_xls(store_over_work_day, store_over_work_time, store_over_work_money)
         else:
             # 옵션 더 추가..?
             pass
