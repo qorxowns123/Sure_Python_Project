@@ -1,7 +1,6 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
-import re
 import Create_ExcelFile
 
 def search_hanbiro_main(sure_id, sure_pw):
@@ -66,7 +65,7 @@ def enter_calendar(driver, inout_year, inout_day):
     for loopjdx in range(0, get_day_info.__len__()):
         store_day_info_temp.append(get_day_info[loopjdx][1].text)
         store_check_info_temp.append(get_day_info[loopjdx][3].text)
-        store_check_info_temp[loopjdx] = store_check_info_temp[loopjdx].replace('\t','')
+        store_check_info_temp[loopjdx] = store_check_info_temp[loopjdx].replace('\t', '')
         store_check_info_temp[loopjdx] = store_check_info_temp[loopjdx].replace('\n', '')
         store_check_info_temp[loopjdx] = store_check_info_temp[loopjdx].replace(' ', '')
 
@@ -139,7 +138,7 @@ def enter_calendar(driver, inout_year, inout_day):
     store_over_work_time_temp = []
     store_over_work_money_temp = []
 
-    #본사에서 8시 이후 퇴근한 날
+    # 본사에서 8시 이후 퇴근한 날
     for loopmdx in range(0, get_check_info.__len__()):
         if not store_over_work_day_temp:
             pass
@@ -193,22 +192,17 @@ def enter_calendar(driver, inout_year, inout_day):
 
 # 메인
 if __name__  == "__main__":
-    option = '야근경비'
-    [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
+    [check_login, driver] = search_hanbiro_main('tjback123', 'dowk0056')
 
     if check_login != False:
-        if option == '야근경비':
-            [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2017', '10')
-            if store_over_work_day[0].__len__() == 1:
-                print('야근한 날이 없습니다.')
-            else:
-                # 엑셀 파싱 함수넣기
-                print(store_over_work_day)
-                print(store_over_work_time)
-                print(store_over_work_money)
-                Create_ExcelFile.create_xls(store_over_work_day, store_over_work_time, store_over_work_money)
+        [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2017', '10')
+        if store_over_work_day[0].__len__() == 1:  # 조금 더 생각해 보기
+            print('야근한 날이 없습니다.')
         else:
-            # 옵션 더 추가..?
-            pass
+            # 엑셀 파싱 함수넣기
+            print(store_over_work_day)
+            print(store_over_work_time)
+            print(store_over_work_money)
+            Create_ExcelFile.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money)
     else:
         pass

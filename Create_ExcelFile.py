@@ -1,8 +1,7 @@
 import xlsxwriter
 
 # store_over_work_day, store_over_work_time, store_over_work_money
-
-def create_xls(store_over_work_day, store_over_work_time, store_over_work_money):
+def create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money):
 
     over_work_day_list = store_over_work_day
     over_work_day_time = store_over_work_time
@@ -66,7 +65,7 @@ def create_xls(store_over_work_day, store_over_work_time, store_over_work_money)
                     worksheet.write(loopcdx, first_col + loopkdx, '', cell_format)
 
 
-
+    # 워크북 종료
     workbook.close()
     print('Excel 생성 완료...')
 
