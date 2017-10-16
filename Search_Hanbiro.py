@@ -192,7 +192,7 @@ def enter_calendar(driver, inout_year, inout_day):
 
 # 메인
 if __name__  == "__main__":
-    [check_login, driver] = search_hanbiro_main('tjback123', 'dowk0056')
+    [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
 
     if check_login != False:
         [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2017', '10')
