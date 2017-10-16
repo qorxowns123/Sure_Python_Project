@@ -189,17 +189,29 @@ def enter_calendar(driver, inout_year, inout_day):
             fix_text = fix_text[0:2] + '월' + fix_text[3:5] + '일'
             store_over_work_time[looopqdx][loopwdx] = fix_text
 
-    # HTML 파싱 끝(브라우저 종료)
-    driver.close()
     print(store_over_work_day)
     print(store_over_work_time)
     print(store_over_work_money)
 
     return (store_over_work_day, store_over_work_time, store_over_work_money)
 
+
+def upload_xlsx(driver):
+    # 전자결제 링크
+    set_payment_link = 'http://suresofttech.hanbiro.net/eapproval/?mod=draft&req=select'
+    driver.get(set_payment_link)
+    # 경비보고서 선택
+    driver.find_element_by_name('formcode').send_keys('경비보고서')
+    # 확인 클릭
+    driver.find_element_by_xpath('/html/body/button[1]').click()
+    # 오피스 파일 읽어오기 클릭
+    driver.find_element_by_xpath('//*[@id="readoffice"]').click()
+    # 파일 선택 클릭
+    driver.find_element_by_xpath('//*[@id="officeLayer"]/table/tbody/tr/td/table/tbody/tr[2]/td/input').click()
+
 # 메인
 if __name__  == "__main__":
-    [check_login, driver] = search_hanbiro_main('tjback123', 'dowk0056')
+    [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
 
     if check_login != False:
         [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2016', '03')
@@ -208,5 +220,6 @@ if __name__  == "__main__":
         else:
             # 엑셀 파싱 함수넣기
             Create_ExcelFile.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money)
+            upload_xlsx(driver)
     else:
         pass

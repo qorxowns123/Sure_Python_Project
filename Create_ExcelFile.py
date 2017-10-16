@@ -26,12 +26,6 @@ def create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money
         'valign': 'vcenter'  # 텍스트 가로 위치
     })
 
-    # column 폭 지정
-    worksheet.set_column(1, 1, 14)
-    '''
-    worksheet.set_column(2, 7, 20)
-    '''
-
     # 셀 병합을 통한 셀 작성
     worksheet.merge_range('A1:B1', '주 차', merge_format)
     worksheet.merge_range('A2:B2', '지출항목', merge_format)
@@ -65,22 +59,20 @@ def create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money
                     worksheet.write(loopcdx, first_col + loopkdx, '', cell_format)
 
     # 항목별 총액
-    worksheet.merge_range(0, last_col + 1, 1, last_col + 2, '항목별 총액', merge_format)
-    for loopbdx in range(2, 13):
-        worksheet.merge_range(loopbdx, last_col + 1, loopbdx, last_col + 2, '', merge_format)
+    worksheet.set_column(last_col + 1, last_col + 1, 40)
+    worksheet.write(0, last_col + 1, '항목별 총액', merge_format)
+    for loopbdx in range(1, 13):
+        worksheet.write(loopbdx, last_col + 1, '', merge_format)
+
+    # A column폭 지정
+    worksheet.set_column('A:A', 10)
+    # B column폭 지정
+    worksheet.set_column('B:B', 17)
 
     # 워크북 종료
     workbook.close()
     print('Excel 생성 완료...')
 
 '''
-# 메인
 if __name__  == "__main__":
-    list = ['1주차']
-    dict = {'day':'월', '시간':'10시'}
-    list.append(dict)
-    print(list)
-    dict = []
-    list.append(dict)
-    print(list)
 '''
