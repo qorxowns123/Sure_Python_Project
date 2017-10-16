@@ -43,7 +43,7 @@ def create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money
         worksheet.write(loopidx + 2, 0, loopidx+1, cell_format)
         worksheet.write(loopidx + 2, 1, item_list[loopidx], cell_format)
 
-    # 아래 코드는 추후 UI를 반영하여 로직 수정 예정
+    # 산출된 주차 수 만큼 금액, 날짜, 내역 출력
     menu_list = ['금액', '날짜/횟수', '내역']
     first_col = -1
     last_col = 1
@@ -64,6 +64,10 @@ def create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money
                 else:
                     worksheet.write(loopcdx, first_col + loopkdx, '', cell_format)
 
+    # 항목별 총액
+    worksheet.merge_range(0, last_col + 1, 1, last_col + 2, '항목별 총액', merge_format)
+    for loopbdx in range(2, 13):
+        worksheet.merge_range(loopbdx, last_col + 1, loopbdx, last_col + 2, '', merge_format)
 
     # 워크북 종료
     workbook.close()

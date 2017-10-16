@@ -162,19 +162,22 @@ def enter_calendar(driver, inout_year, inout_day):
                 # 야근 했다면..
                 if set_over_work_time < check_time:
                     range_time = check_time - set_over_work_time
-                    store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ? 주차
-                    store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
+                    if range_time >= 2:
+                        store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ? 주차
+                        store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
 
-                    store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
-                    store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
+                        store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
+                        store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
 
-                    store_over_work_money_temp.append(get_check_info[loopmdx][0])
-                    if (range_time >= 2 and range_time < 4):
-                        store_over_work_money_temp.append('10,000')
-                    elif (range_time >= 4 and range_time < 8):
-                        store_over_work_money_temp.append('20,000')
-                    elif range_time >= 8:
-                        store_over_work_money_temp.append('40,000')
+                        store_over_work_money_temp.append(get_check_info[loopmdx][0])
+                        if (range_time >= 2 and range_time < 4):
+                            store_over_work_money_temp.append('10,000')
+                        elif (range_time >= 4 and range_time < 8):
+                            store_over_work_money_temp.append('20,000')
+                        elif range_time >= 8:
+                            store_over_work_money_temp.append('40,000')
+                        else:
+                            pass
                     else:
                         pass
 
@@ -188,21 +191,22 @@ def enter_calendar(driver, inout_year, inout_day):
 
     # HTML 파싱 끝(브라우저 종료)
     driver.close()
+    print(store_over_work_day)
+    print(store_over_work_time)
+    print(store_over_work_money)
+
     return (store_over_work_day, store_over_work_time, store_over_work_money)
 
 # 메인
 if __name__  == "__main__":
-    [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
+    [check_login, driver] = search_hanbiro_main('tjback123', 'dowk0056')
 
     if check_login != False:
-        [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2017', '10')
-        if store_over_work_day[0].__len__() == 1:  # 조금 더 생각해 보기
+        [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2016', '03')
+        if not store_over_work_day:  # 조금 더 생각해 보기
             print('야근한 날이 없습니다.')
         else:
             # 엑셀 파싱 함수넣기
-            print(store_over_work_day)
-            print(store_over_work_time)
-            print(store_over_work_money)
             Create_ExcelFile.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money)
     else:
         pass
