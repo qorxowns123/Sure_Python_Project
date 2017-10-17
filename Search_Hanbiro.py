@@ -204,6 +204,11 @@ def upload_xlsx(driver):
     driver.find_element_by_name('formcode').send_keys('경비보고서')
     # 확인 클릭
     driver.find_element_by_xpath('/html/body/button[1]').click()
+    if driver.current_url != 'http://suresofttech.hanbiro.net/eapproval/?mod=draft':
+        # 딜레이
+        time.sleep(5)
+    else:
+        pass
     # 오피스 파일 읽어오기 클릭
     driver.find_element_by_xpath('//*[@id="readoffice"]').click()
     # 파일 선택 클릭
@@ -211,7 +216,7 @@ def upload_xlsx(driver):
 
 # 메인
 if __name__  == "__main__":
-    [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
+    [check_login, driver] = search_hanbiro_main('tjback123', 'wkfmqks0056')
 
     if check_login != False:
         [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2016', '03')
@@ -220,6 +225,7 @@ if __name__  == "__main__":
         else:
             # 엑셀 파싱 함수넣기
             Create_ExcelFile.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money)
+            # 경비보고서 페이지 열기
             upload_xlsx(driver)
     else:
         pass
