@@ -128,6 +128,8 @@ def enter_calendar(driver, inout_year, inout_day):
                 # 해당 시간 저장
                 cur_text = cur_text[find_index + 5:find_index + 10]
                 get_check_info_temp.append(cur_text)
+            else:
+                pass
 
     store_over_work_day = []
     store_over_work_time = []
@@ -180,6 +182,8 @@ def enter_calendar(driver, inout_year, inout_day):
                             pass
                     else:
                         pass
+                else:
+                    pass
 
     for looopqdx in range(0, store_over_work_time.__len__()):
         for loopwdx in range(1, store_over_work_time[looopqdx].__len__()):
@@ -216,7 +220,7 @@ def upload_xlsx(driver):
 
 # 메인
 if __name__  == "__main__":
-    [check_login, driver] = search_hanbiro_main('tjback123', 'wkfmqks0056')
+    [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
 
     if check_login != False:
         [store_over_work_day, store_over_work_time, store_over_work_money] = enter_calendar(driver, '2016', '03')
