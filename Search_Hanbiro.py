@@ -200,24 +200,6 @@ def enter_calendar(driver, inout_year, inout_day):
     return (store_over_work_day, store_over_work_time, store_over_work_money)
 
 
-def upload_xlsx(driver):
-    # 전자결제 링크
-    set_payment_link = 'http://suresofttech.hanbiro.net/eapproval/?mod=draft&req=select'
-    driver.get(set_payment_link)
-    # 경비보고서 선택
-    driver.find_element_by_name('formcode').send_keys('경비보고서')
-    # 확인 클릭
-    driver.find_element_by_xpath('/html/body/button[1]').click()
-    if driver.current_url != 'http://suresofttech.hanbiro.net/eapproval/?mod=draft':
-        # 딜레이
-        time.sleep(5)
-    else:
-        pass
-    # 오피스 파일 읽어오기 클릭
-    driver.find_element_by_xpath('//*[@id="readoffice"]').click()
-    # 파일 선택 클릭
-    driver.find_element_by_xpath('//*[@id="officeLayer"]/table/tbody/tr/td/table/tbody/tr[2]/td/input').click()
-
 # 메인
 if __name__  == "__main__":
     [check_login, driver] = search_hanbiro_main('tjback123', 'xxxx')
