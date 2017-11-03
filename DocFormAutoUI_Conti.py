@@ -9,6 +9,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
+
+    Ui_data = ['ID', 'PW', 2000, 1, 0, 0]
+    UI_password = ['Init_PW']
+
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(404, 664)
@@ -50,18 +54,18 @@ class Ui_Dialog(object):
         self.U_SetTime = QtWidgets.QGroupBox(Dialog)
         self.U_SetTime.setGeometry(QtCore.QRect(10, 220, 381, 71))
         self.U_SetTime.setObjectName("U_SetTime")
-        self.G_User_SetHour = QtWidgets.QFontComboBox(self.U_SetTime)
-        self.G_User_SetHour.setGeometry(QtCore.QRect(10, 30, 111, 31))
-        self.G_User_SetHour.setObjectName("G_User_SetHour")
-        self.G_User_SetMinute = QtWidgets.QFontComboBox(self.U_SetTime)
-        self.G_User_SetMinute.setGeometry(QtCore.QRect(200, 30, 111, 31))
-        self.G_User_SetMinute.setObjectName("G_User_SetMinute")
         self.label_5 = QtWidgets.QLabel(self.U_SetTime)
         self.label_5.setGeometry(QtCore.QRect(130, 40, 56, 12))
         self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(self.U_SetTime)
         self.label_6.setGeometry(QtCore.QRect(320, 40, 56, 12))
         self.label_6.setObjectName("label_6")
+        self.G_User_SetHour = QtWidgets.QComboBox(self.U_SetTime)
+        self.G_User_SetHour.setGeometry(QtCore.QRect(10, 30, 111, 31))
+        self.G_User_SetHour.setObjectName("G_User_SetHour")
+        self.G_User_SetMinute = QtWidgets.QComboBox(self.U_SetTime)
+        self.G_User_SetMinute.setGeometry(QtCore.QRect(200, 30, 111, 31))
+        self.G_User_SetMinute.setObjectName("G_User_SetMinute")
         self.U_Print_OTTable = QtWidgets.QTableView(Dialog)
         self.U_Print_OTTable.setGeometry(QtCore.QRect(10, 380, 381, 211))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -100,6 +104,9 @@ class Ui_Dialog(object):
 
         self.G_Get_GWHR.clicked.connect(self.Get_GWHR_bnt_clicked)
         self.G_Make_DocForm.clicked.connect(self.Make_DocForm_bnt_clicked)
+        self.G_User_PW.textChanged.connect(self.User_PW_key_pushed)
+
+        self.Set_Items() 
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -114,22 +121,64 @@ class Ui_Dialog(object):
         self.label_3.setText(_translate("Dialog", "년"))
         self.label_4.setText(_translate("Dialog", "월"))
         self.U_SetTime.setTitle(_translate("Dialog", "퇴근 시간 설정하기"))
-        self.G_User_SetHour.setCurrentText(_translate("Dialog", "18"))
-        self.G_User_SetMinute.setCurrentText(_translate("Dialog", "00"))
         self.label_5.setText(_translate("Dialog", "시"))
         self.label_6.setText(_translate("Dialog", "분"))
         self.G_Get_GWHR.setText(_translate("Dialog", "가져오기"))
         self.G_Make_DocForm.setText(_translate("Dialog", "내보내기"))
 
+    def Set_Items(self):
+        
+        Items_year = ['2014', '2015', '2016', '2017']
+        self.G_User_SetYear.addItems(Items_year)
+
+        Items_month = ['1','2','3','4','5','6','7','8','9','10','11','12']
+        self.G_User_SetMonth.addItems(Items_month)
+
+        Items_hour = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24']
+        self.G_User_SetHour.addItems(Items_hour)
+
+        Items_minute = ['0', '10','20','30','40','50']
+        self.G_User_SetMinute.addItems(Items_minute)
+
+
+
     def Get_GWHR_bnt_clicked(self):
         print('가져오기 눌림')
         ID_txt = self.G_User_ID.toPlainText()
-        print(ID_txt)
+        PW_txt = self.G_User_PW.toPlainText()
+        Year_Num = self.G_User_SetYear.currentText()
+        Month_Num = self.G_User_SetMonth.currentText()
+        Hour_Num = self.G_User_SetHour.currentText()
+        Minute_Num = self.G_User_SetMinute.currentText()
+
+
+        if ID_txt != None:     
+            self.Ui_data[0] = ID_txt
+
+        if PW_txt != None:
+            self.Ui_data[1] = PW_txt
+
+        if Year_Num != None:
+            self.Ui_data[2] = Year_Num
+
+        if Month_Num != None:
+            self.Ui_data[3] = Month_Num
+
+        if Hour_Num != None:
+            self.Ui_data[4] = Hour_Num
+
+        if Minute_Num != None:
+            self.Ui_data[5] = Minute_Num
+
+        print(self.Ui_data)
 
     def Make_DocForm_bnt_clicked(self):
         print('내보내기 눌림')
         PW_txt = self.G_User_PW.toPlainText()
         print(PW_txt)
+
+    def User_PW_key_pushed(self):
+        print('키 입력')
 
 if __name__ == "__main__":
     import sys

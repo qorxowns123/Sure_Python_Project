@@ -149,32 +149,6 @@
    <property name="title">
     <string>퇴근 시간 설정하기</string>
    </property>
-   <widget class="QFontComboBox" name="G_User_SetHour">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="currentText">
-     <string>18</string>
-    </property>
-   </widget>
-   <widget class="QFontComboBox" name="G_User_SetMinute">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>30</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="currentText">
-     <string>00</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
@@ -199,6 +173,26 @@
     </property>
     <property name="text">
      <string>분</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="G_User_SetHour">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="G_User_SetMinute">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>30</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
     </property>
    </widget>
   </widget>
