@@ -1,7 +1,6 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
-import Create_ExcelFile
 
 class SearchHanbiro:
     def search_hanbiro_main(self, sure_id, sure_pw):
@@ -34,7 +33,16 @@ class SearchHanbiro:
 
         return (check_login, driver)
 
-    def enter_calendar(self, driver, inout_year, inout_day):
+    def enter_calendar(self, driver, set_day_info):
+        # 년
+        input_year = set_day_info[0]
+        # 월
+        input_day = set_day_info[1]
+        # 시간
+        over_work_hour_time  = int(set_day_info[2])
+        # 분
+        over_work_min_time = int(set_day_info[3])
+
         # 한비로 캘린더 주소
         calendar_address = 'http://suresofttech.hanbiro.net/groupware/?category=time&section=userCalendar'
 
@@ -42,9 +50,9 @@ class SearchHanbiro:
         # 목록으로 보기
         driver.find_element_by_xpath('/html/body/table/tbody/tr/td/table[1]/tbody/tr/td[2]/button[1]').click()
         # 년도 입력
-        driver.find_element_by_name('syear').send_keys(inout_year)
+        driver.find_element_by_name('syear').send_keys(input_year)
         # 월 입력
-        driver.find_element_by_name('smonth').send_keys(inout_day)
+        driver.find_element_by_name('smonth').send_keys(input_day)
         # 검색
         driver.find_element_by_xpath('//*[@id="monthTerm"]/form/table/tbody/tr/td[2]/input').click()
 
@@ -58,6 +66,9 @@ class SearchHanbiro:
         get_day_info = []
         for loopidx in range(0, get_tag_info.__len__()):
             get_day_info.append(get_tag_info[loopidx].contents)
+
+        # 브라우져 종료
+        driver.close()
 
         # 일자 저장
         store_day_info_temp = []
@@ -135,13 +146,12 @@ class SearchHanbiro:
         store_over_work_day = []
         store_over_work_time = []
         store_over_work_money = []
-        set_over_work_time = 18
 
         store_over_work_day_temp = []
         store_over_work_time_temp = []
         store_over_work_money_temp = []
 
-        # 본사에서 8시 이후 퇴근한 날
+        # 본사에서 n시 이후 퇴근한 날
         for loopmdx in range(0, get_check_info.__len__()):
             if not store_over_work_day_temp:
                 pass
@@ -159,26 +169,34 @@ class SearchHanbiro:
             else:
                 for loopndx in range(1, get_check_info[loopmdx].__len__()):
                     check_time = get_check_info[loopmdx][loopndx]  # '19:23'
-                    check_time = check_time[0:2]  # '19'
-                    check_time = int(check_time)  # 19
+                    check_hour_time = check_time[0:2]  # '19'
+                    check_hour_time = int(check_hour_time)  # 19
+
+                    check_min_time = check_time[3:]  # '23'
+                    check_min_time = int(check_min_time)  # '23
 
                     # 야근 했다면..
-                    if set_over_work_time < check_time:
-                        range_time = check_time - set_over_work_time
-                        if range_time >= 2:
-                            store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ? 주차
-                            store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
+                    if over_work_hour_time < check_hour_time:
+                        range_hour_time = check_hour_time - over_work_hour_time
+                        range_min_time = over_work_min_time - check_min_time
+                        if range_min_time < 0:
+                            range_hour_time = range_hour_time -1
+                            if range_hour_time >= 2:
+                                store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ? 주차
+                                store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
 
-                            store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
-                            store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
+                                store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
+                                store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
 
-                            store_over_work_money_temp.append(get_check_info[loopmdx][0])
-                            if (range_time >= 2 and range_time < 4):
-                                store_over_work_money_temp.append('10,000')
-                            elif (range_time >= 4 and range_time < 8):
-                                store_over_work_money_temp.append('20,000')
-                            elif range_time >= 8:
-                                store_over_work_money_temp.append('40,000')
+                                store_over_work_money_temp.append(get_check_info[loopmdx][0])
+                                if (range_hour_time >= 2 and range_hour_time < 4):
+                                    store_over_work_money_temp.append('10,000')
+                                elif (range_hour_time >= 4 and range_hour_time < 8):
+                                    store_over_work_money_temp.append('20,000')
+                                elif range_hour_time >= 8:
+                                    store_over_work_money_temp.append('40,000')
+                                else:
+                                    pass
                             else:
                                 pass
                         else:
@@ -201,6 +219,8 @@ class SearchHanbiro:
         return (store_over_work_day, store_over_work_time, store_over_work_money)
 
 
+
+'''
 # 메인
 if __name__  == "__main__":
     class_hanbiro = SearchHanbiro()
@@ -217,3 +237,4 @@ if __name__  == "__main__":
             class_createexcelfile.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money)
     else:
         pass
+'''
