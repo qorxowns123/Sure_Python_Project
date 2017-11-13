@@ -26,9 +26,10 @@ class SearchHanbiro:
         time.sleep(3)
 
         if (driver.current_url != login_adress):
-            print('로그인 실패!!')
+            #print('로그인 실패!!')
+            pass
         else:
-            print('로그인 성공!!')
+            #print('로그인 성공!!')
             check_login = True
 
         return (check_login, driver)
@@ -212,9 +213,9 @@ class SearchHanbiro:
                 fix_text = fix_text[0:2] + '월' + fix_text[3:5] + '일'
                 store_over_work_time[looopqdx][loopwdx] = fix_text
 
-        print(store_over_work_day)
-        print(store_over_work_time)
-        print(store_over_work_money)
+        #print(store_over_work_day)
+        #print(store_over_work_time)
+        #print(store_over_work_money)
 
         return (store_over_work_day, store_over_work_time, store_over_work_money)
 

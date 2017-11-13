@@ -172,15 +172,17 @@ class MyWindow(QMainWindow):
         self.statusBar.showMessage('Ready')
 
     def Key_pressed(self):
-        print('Any key pressed')
+        #print('Any key pressed')
+        pass
 
 
     def Id_Key_press(self):
-        print('ID text changed')
-
+        #print('ID text changed')
+        pass
 
     def Pw_Key_press(self):
-        print('PW text changed')
+        #print('PW text changed')
+        pass
 
     def clicked_make_btn(self):
         #print('경비보고서 생성 버튼 클릭')
@@ -232,7 +234,7 @@ class MyWindow(QMainWindow):
         #print('경비보고서 열기 버튼 클릭')
         self.statusBar.showMessage('경비보고서.xlsx 파일을 실행합니다')
         filepath = ".\\경비보고서.xlsx"
-        os.popen(filepath)
+        #os.popen(filepath)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
