@@ -151,7 +151,11 @@ class SearchHanbiro:
                     # 정상퇴근을 찾으면 해당 날짜 저장
                     get_check_day_temp.append(store_day_info[loopkdx][loopldx])
                     # 해당 시간 저장
-                    cur_text = cur_text[find_index + 5:find_index + 10]
+                    check_word = cur_text[find_index + 4]
+                    if check_word == '-':
+                        cur_text = cur_text[find_index + 5:find_index + 10]
+                    else:
+                        cur_text = cur_text[find_index + 4:find_index + 9]
                     get_check_info_temp.append(cur_text)
                 else:
                     pass
@@ -197,7 +201,7 @@ class SearchHanbiro:
                         else:
                             pass
                         if range_hour_time >= 2:
-                            store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ? 주차
+                            store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ?주차
                             store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
 
                             store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
@@ -225,7 +229,10 @@ class SearchHanbiro:
                 fix_text = fix_text[5:] # 01-06 (수)
                 fix_text = fix_text[0:5]
                 fix_text = fix_text[0:2] + '월' + fix_text[3:5] + '일'
-                store_over_work_time[looopqdx][loopwdx] = fix_text
+                if fix_text == '월일':
+                    pass
+                else:
+                    store_over_work_time[looopqdx][loopwdx] = fix_text
 
         return (store_over_work_day, store_over_work_time, store_over_work_money)
 
