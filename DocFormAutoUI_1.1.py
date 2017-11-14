@@ -152,12 +152,14 @@ class MyWindow(QMainWindow):
         self.U_Get_GWHR_2.move(10, 305)
         self.U_Get_GWHR_2.resize(360, 62)
         self.U_Get_GWHR_2.setTitle("")
+
         #get active button
         self.G_Make_DocForm = QPushButton(self.U_Get_GWHR_2)
         self.G_Make_DocForm.move(20, 15)
         self.G_Make_DocForm.resize(140, 32)
         self.G_Make_DocForm.setText('경비보고서 생성')
         self.G_Make_DocForm.clicked.connect(self.clicked_make_btn)
+        self.G_Make_DocForm.setAutoDefault(True)
         
         #make activ button
         self.G_Open_DocForm = QPushButton(self.U_Get_GWHR_2)
@@ -165,6 +167,7 @@ class MyWindow(QMainWindow):
         self.G_Open_DocForm.resize(140, 32)
         self.G_Open_DocForm.setText('경비보고서 열기')
         self.G_Open_DocForm.clicked.connect(self.clicked_open_btn)
+        self.G_Open_DocForm.setAutoDefault(True)
 
         # StatusBar
         self.statusBar = QStatusBar(self)
@@ -204,9 +207,10 @@ class MyWindow(QMainWindow):
             class_xlsx = Create_ExcelFile.CreateExcelFile()
 
             [check_login, driver, errorflag] = class_hanbiro.search_hanbiro_main(self.G_User_ID.text(), self.G_User_PW.text())
+            '''
             print(self.G_User_ID.text())
             print(self.G_User_PW.text())
-
+            '''
 
             if errorflag == 2:
                 self.statusBar.showMessage('phantomjs.exe 파일이 실행파일과 같은 폴더에 위치해야만 합니다')
