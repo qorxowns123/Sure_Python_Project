@@ -25,13 +25,16 @@ class MyWindow(QMainWindow):
         self.U_LoginInfo.setTitle('로그인 정보')
 
         #Loginfo ID text box
-        self.G_User_ID = QTextEdit(self.U_LoginInfo)
+        #self.G_User_ID = QTextEdit(self.U_LoginInfo)
+        self.G_User_ID = QLineEdit(self.U_LoginInfo)
         self.G_User_ID.move(100, 25)
         self.G_User_ID.resize(245, 30)
         self.G_User_ID.textChanged.connect(self.Id_Key_press)
+        self.G_User_ID.setFocus()
 
         #Loginfo PW text box
-        self.G_User_PW = QTextEdit(self.U_LoginInfo)
+        #self.G_User_PW = QTextEdit(self.U_LoginInfo)
+        self.G_User_PW = QLineEdit(self.U_LoginInfo)
         self.G_User_PW.move(100, 70)
         self.G_User_PW.resize(245, 30)
         self.G_User_PW.textChanged.connect(self.Pw_Key_press)
@@ -171,8 +174,8 @@ class MyWindow(QMainWindow):
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage('Ready')
 
-    def Key_pressed(self):
-        #print('Any key pressed')
+    def Window_Key_press(self):
+        print('Any key pressed')
         pass
 
 
