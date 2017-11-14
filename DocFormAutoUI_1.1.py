@@ -28,14 +28,12 @@ class MyWindow(QMainWindow):
         self.G_User_ID = QLineEdit(self.U_LoginInfo)
         self.G_User_ID.move(100, 25)
         self.G_User_ID.resize(245, 30)
-        self.G_User_ID.textChanged.connect(self.Id_Key_press)
         self.G_User_ID.setFocus()
 
         #Loginfo PW text box
         self.G_User_PW = QLineEdit(self.U_LoginInfo)
         self.G_User_PW.move(100, 70)
         self.G_User_PW.resize(245, 30)
-        self.G_User_PW.textChanged.connect(self.Pw_Key_press)
         self.G_User_PW.setEchoMode(QLineEdit.Password)
 
         #Loginfo ID label
@@ -173,24 +171,6 @@ class MyWindow(QMainWindow):
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage('Ready')
 
-    def Window_Key_press(self):
-        print('Any key pressed')
-        pass
-
-
-    def Id_Key_press(self):
-        pass
-        '''
-        print('ID text changed')
-        print(self.G_User_ID.toPlainText())
-        if '\t' in self.G_User_ID.toPlainText():
-            print('탭 발견!!')
-        '''
-
-    def Pw_Key_press(self):
-        #print('PW text changed')
-        pass
-
     def clicked_make_btn(self):
         #print('경비보고서 생성 버튼 클릭')
         self.statusBar.showMessage('한비로에 로그인 시도 중...')
@@ -213,17 +193,21 @@ class MyWindow(QMainWindow):
         self.set_day_info.append(self.G_User_SetMinute.currentText())
         #print(self.Info)
 
-        if not self.G_User_ID.toPlainText():
+        if not self.G_User_ID.text():
             self.statusBar.showMessage('아이디를 입력해주세요')
             return
-        elif not self.G_User_PW.toPlainText():
+        elif not self.G_User_PW.text():
             self.statusBar.showMessage('패스워드를 입력해주세요')
             return
         else:
             class_hanbiro = Search_Hanbiro.SearchHanbiro()
             class_xlsx = Create_ExcelFile.CreateExcelFile()
 
-            [check_login, driver, errorflag] = class_hanbiro.search_hanbiro_main(self.G_User_ID.toPlainText(), self.G_User_PW.toPlainText())
+            [check_login, driver, errorflag] = class_hanbiro.search_hanbiro_main(self.G_User_ID.text(), self.G_User_PW.text())
+            print(self.G_User_ID.text())
+            print(self.G_User_PW.text())
+
+
             if errorflag == 2:
                 self.statusBar.showMessage('phantomjs.exe 파일이 실행파일과 같은 폴더에 위치해야만 합니다')
                 return
