@@ -16,7 +16,7 @@ class MyWindow(QMainWindow):
     def setupUI(self):
         self.setGeometry(800, 400, 385, 390)
 
-        self.setWindowTitle('서윤정 돼지')
+        self.setWindowTitle('경비보고서 자동생성')
 
         #Loginfo group box
         self.U_LoginInfo = QGroupBox(self)
@@ -177,8 +177,13 @@ class MyWindow(QMainWindow):
 
 
     def Id_Key_press(self):
-        #print('ID text changed')
         pass
+        '''
+        print('ID text changed')
+        print(self.G_User_ID.toPlainText())
+        if '\t' in self.G_User_ID.toPlainText():
+            print('탭 발견!!')
+        '''
 
     def Pw_Key_press(self):
         #print('PW text changed')
@@ -216,7 +221,13 @@ class MyWindow(QMainWindow):
             class_hanbiro = Search_Hanbiro.SearchHanbiro()
             class_xlsx = Create_ExcelFile.CreateExcelFile()
 
-            [check_login, driver] = class_hanbiro.search_hanbiro_main(self.G_User_ID.toPlainText(), self.G_User_PW.toPlainText())
+            [check_login, driver, errorflag] = class_hanbiro.search_hanbiro_main(self.G_User_ID.toPlainText(), self.G_User_PW.toPlainText())
+            if errorflag == 2:
+                self.statusBar.showMessage('phantomjs.exe 파일이 실행파일과 같은 폴더에 위치해야만 합니다')
+                return
+            else:
+                pass
+
             if check_login != False:
                 # 캘린더 로그인
                 [store_over_work_day, store_over_work_time, store_over_work_money] = class_hanbiro.enter_calendar(driver, self.set_day_info)

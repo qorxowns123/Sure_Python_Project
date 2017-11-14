@@ -15,7 +15,15 @@ class SearchHanbiro:
         excutepath = os.getcwd()
         excutename = 'phantomjs.exe'
         excutepath = os.path.join(excutepath, excutename)
-        driver = webdriver.PhantomJS(excutepath)
+        errorflag = 1
+        driver = webdriver
+
+        try:
+            driver = driver.PhantomJS(excutepath)
+        except:
+            errorflag = 2
+            return (check_login, driver, errorflag)
+
         # 암묵적으로 웹 자원 로드를 위해 3초까지 기다려 준다.
         driver.implicitly_wait(3)
         # 한비로 접속
@@ -36,7 +44,7 @@ class SearchHanbiro:
             #print('로그인 성공!!')
             check_login = True
 
-        return (check_login, driver)
+        return (check_login, driver, errorflag)
 
     def enter_calendar(self, driver, set_day_info):
         # 년
@@ -183,31 +191,33 @@ class SearchHanbiro:
                     # 야근 했다면..
                     if over_work_hour_time < check_hour_time:
                         range_hour_time = check_hour_time - over_work_hour_time
-                        range_min_time = over_work_min_time - check_min_time
+                        range_min_time = check_min_time - over_work_min_time
                         if range_min_time < 0:
                             range_hour_time = range_hour_time -1
-                            if range_hour_time >= 2:
-                                store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ? 주차
-                                store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
+                        else:
+                            pass
+                        if range_hour_time >= 2:
+                            store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ? 주차
+                            store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
 
-                                store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
-                                store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
+                            store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
+                            store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
 
-                                store_over_work_money_temp.append(get_check_info[loopmdx][0])
-                                if (range_hour_time >= 2 and range_hour_time < 4):
-                                    store_over_work_money_temp.append('10,000')
-                                elif (range_hour_time >= 4 and range_hour_time < 8):
-                                    store_over_work_money_temp.append('20,000')
-                                elif range_hour_time >= 8:
-                                    store_over_work_money_temp.append('40,000')
-                                else:
-                                    pass
+                            store_over_work_money_temp.append(get_check_info[loopmdx][0])
+                            if (range_hour_time >= 2 and range_hour_time < 4):
+                                store_over_work_money_temp.append('10,000')
+                            elif (range_hour_time >= 4 and range_hour_time < 8):
+                                store_over_work_money_temp.append('20,000')
+                            elif range_hour_time >= 8:
+                                store_over_work_money_temp.append('40,000')
                             else:
                                 pass
                         else:
                             pass
                     else:
                         pass
+                else:
+                    pass
 
         for looopqdx in range(0, store_over_work_time.__len__()):
             for loopwdx in range(1, store_over_work_time[looopqdx].__len__()):
@@ -216,10 +226,6 @@ class SearchHanbiro:
                 fix_text = fix_text[0:5]
                 fix_text = fix_text[0:2] + '월' + fix_text[3:5] + '일'
                 store_over_work_time[looopqdx][loopwdx] = fix_text
-
-        #print(store_over_work_day)
-        #print(store_over_work_time)
-        #print(store_over_work_money)
 
         return (store_over_work_day, store_over_work_time, store_over_work_money)
 
