@@ -1,6 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
+import os
 
 class SearchHanbiro:
     def search_hanbiro_main(self, sure_id, sure_pw):
@@ -10,8 +11,11 @@ class SearchHanbiro:
         login_adress = 'http://suresofttech.hanbiro.net/groupware/?category=index&section=main'
         # 정상로그인 확인
         check_login = False
-        # 구글 크롬 드라이버 사용(나중에는 PhantomJS를 사용할 예정)
-        driver = webdriver.Chrome('D:\chromedriver_win32/chromedriver')
+        # 현재 실행 경로 구하기 및 이름 합치기
+        excutepath = os.getcwd()
+        excutename = 'phantomjs.exe'
+        excutepath = os.path.join(excutepath, excutename)
+        driver = webdriver.PhantomJS(excutepath)
         # 암묵적으로 웹 자원 로드를 위해 3초까지 기다려 준다.
         driver.implicitly_wait(3)
         # 한비로 접속

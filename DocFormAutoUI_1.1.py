@@ -1,8 +1,8 @@
 import sys
-import os
 from PyQt5.QtWidgets import *
 import Search_Hanbiro
 import Create_ExcelFile
+import os
 
 class MyWindow(QMainWindow):
 
@@ -234,7 +234,7 @@ class MyWindow(QMainWindow):
         #print('경비보고서 열기 버튼 클릭')
         self.statusBar.showMessage('경비보고서.xlsx 파일을 실행합니다')
         filepath = ".\\경비보고서.xlsx"
-        #os.popen(filepath)
+        os.popen(filepath)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
