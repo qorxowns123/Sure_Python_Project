@@ -2,16 +2,20 @@ import xlsxwriter
 
 # store_over_work_day, store_over_work_time, store_over_work_money
 class CreateExcelFile:
-    def create_xlsx(self, store_over_work_day, store_over_work_time, store_over_work_money):
+    def create_xlsx(self, store_over_work_day, store_over_work_time, store_over_work_money, set_day_info):
 
         over_work_day_list = store_over_work_day
         over_work_day_time = store_over_work_time
         over_work_day_money = store_over_work_money
 
+        get_year = set_day_info[0]
+        get_month = set_day_info[1]
+        filename = get_year + '_' + get_month + '_' + '경비보고서.xlsx'
+
         loop_week = over_work_day_list.__len__()
 
         # 워크북 생성
-        workbook = xlsxwriter.Workbook('경비보고서.xlsx')
+        workbook = xlsxwriter.Workbook(filename)
         # 시트 생성
         worksheet = workbook.add_worksheet('경비보고서')
         # 포맷설정
@@ -24,7 +28,8 @@ class CreateExcelFile:
         cell_format = workbook.add_format({
             'border': 1, # 테두리 스타일
             'align': 'center',  # 텍스트 세로 위치
-            'valign': 'vcenter'  # 텍스트 가로 위치
+            'valign': 'vcenter',  # 텍스트 가로 위치
+            'text_wrap': True
         })
 
         # 셀 병합을 통한 셀 작성
@@ -51,19 +56,46 @@ class CreateExcelFile:
                 for loopkdx in range(0, menu_list.__len__()):
                     if loopcdx == 1:
                         worksheet.write(loopcdx, first_col + loopkdx, menu_list[loopkdx], cell_format)
-                    elif loopcdx == 3:
-                        for loopadx in range(1 , over_work_day_list[loopjdx].__len__()):
-                            worksheet.write(loopcdx, first_col, over_work_day_money[loopjdx][loopadx], cell_format)
-                            worksheet.write(loopcdx, first_col+1, over_work_day_time[loopjdx][loopadx], cell_format)
-                            worksheet.write(loopcdx, last_col, '야근교통비', cell_format)
                     else:
                         worksheet.write(loopcdx, first_col + loopkdx, '', cell_format)
+
+        first_col = -1
+        total_sum_money = 0
+        for loopxdx in range(0, loop_week):
+            sum_money = 0
+            first_col = first_col + 3
+            sum_string = ''
+            worksheet.write(3, first_col+2, '야근교통비', cell_format)  # 내역
+            for loopydx in range(1, over_work_day_money[loopxdx].__len__()):
+                if loopydx ==  (over_work_day_money[loopxdx].__len__() - 1):
+                    sum_string = sum_string + over_work_day_time[loopxdx][loopydx]
+
+                    for loopzdx in range(1, over_work_day_money[loopxdx].__len__()):
+                        sum_money = sum_money + over_work_day_money[loopxdx][loopzdx]
+
+                    # 금액
+                    total_sum_money = total_sum_money + sum_money
+                    str_sum_money = str(sum_money)
+                    str_sum_money = str_sum_money[0:2] + ',' + str_sum_money[2:]
+                    worksheet.write(3, first_col, str_sum_money, cell_format)  # 금액
+                else:
+                    sum_string = sum_string + over_work_day_time[loopxdx][loopydx] + ' / '
+
+                worksheet.write(3, first_col + 1, sum_string, cell_format)  # 날짜/횟수
+
+
+        # 항목별 총액(실제 금액)
+        string_total_money = str(total_sum_money)
+        string_total_money = string_total_money[0:2] + ',' + string_total_money[2:]
 
         # 항목별 총액
         worksheet.set_column(last_col + 1, last_col + 1, 40)
         worksheet.write(0, last_col + 1, '항목별 총액', merge_format)
         for loopbdx in range(1, 13):
-            worksheet.write(loopbdx, last_col + 1, '', merge_format)
+            if loopbdx == 3:
+                worksheet.write(loopbdx, last_col + 1, string_total_money, merge_format)
+            else:
+                worksheet.write(loopbdx, last_col + 1, '', merge_format)
 
         # A column폭 지정
         worksheet.set_column('A:A', 10)
@@ -72,4 +104,5 @@ class CreateExcelFile:
 
         # 워크북 종료
         workbook.close()
+        return filename
         #print('Excel 생성 완료...')

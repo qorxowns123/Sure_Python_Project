@@ -8,7 +8,8 @@ class SearchHanbiro:
         # 한비로 로그인 주소
         main_address = 'http://suresofttech.hanbiro.net/groupware/login.php'
         # 로그인 화면
-        login_adress = 'http://suresofttech.hanbiro.net/groupware/?category=index&section=main'
+        login_adress = ['http://suresofttech.hanbiro.net/groupware/?category=index&section=main', 'http://suresofttech.hanbiro.net/ngw/app/#/']
+
         # 정상로그인 확인
         check_login = False
         # 현재 실행 경로 구하기 및 이름 합치기
@@ -37,12 +38,12 @@ class SearchHanbiro:
         # 바로 접속하면 캘린더로 접속이 안되므로 3초의 여유를 둔다.
         time.sleep(3)
 
-        if (driver.current_url != login_adress):
+        if ((driver.current_url == login_adress[0]) or (driver.current_url == login_adress[1])):
+            # print('로그인 성공!!')
+            check_login = True
+        else:
             #print('로그인 실패!!')
             pass
-        else:
-            #print('로그인 성공!!')
-            check_login = True
 
         return (check_login, driver, errorflag)
 
@@ -100,15 +101,14 @@ class SearchHanbiro:
         store_check_info = []
         temp_store_check_info = []
 
-        cnt = 1
-        week_mode = str(cnt) + '주차'
+        week_mode = '주차'
         temp_store_day_info.append(week_mode)
         temp_store_check_info.append(week_mode)
 
+
         for looppdx in range(0, store_day_info_temp.__len__()):
             if store_day_info_temp[looppdx][12] == '일':
-                cnt = cnt + 1
-                week_mode = str(cnt) + '주차'
+                #cnt = cnt + 1
 
                 store_day_info.append(temp_store_day_info)
                 temp_store_day_info = []
@@ -126,8 +126,11 @@ class SearchHanbiro:
         store_day_info.append(temp_store_day_info)
         store_check_info.append(temp_store_check_info)
 
-        # store_day_info.__len__() # 리스트 전체 갯수
-        # store_day_info[0].__len__() # 0번째 리스트 개수
+        '''
+        참고
+        store_day_info.__len__() # 리스트 전체 갯수
+        store_day_info[0].__len__() # 0번째 리스트 개수
+        '''
 
         get_check_day = []
         get_check_info = []
@@ -173,6 +176,10 @@ class SearchHanbiro:
             if not store_over_work_day_temp:
                 pass
             else:
+                store_over_work_day_temp.insert(0,get_check_info[loopmdx][0])
+                store_over_work_time_temp.insert(0, get_check_info[loopmdx][0])
+                store_over_work_money_temp.insert(0, get_check_info[loopmdx][0])
+
                 store_over_work_day.append(store_over_work_day_temp)
                 store_over_work_time.append(store_over_work_time_temp)
                 store_over_work_money.append(store_over_work_money_temp)
@@ -201,19 +208,15 @@ class SearchHanbiro:
                         else:
                             pass
                         if range_hour_time >= 2:
-                            store_over_work_day_temp.append(get_check_info[loopmdx][0])  # ?주차
                             store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
-
-                            store_over_work_time_temp.append(get_check_info[loopmdx][0]) # ? 주차
                             store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
 
-                            store_over_work_money_temp.append(get_check_info[loopmdx][0])
                             if (range_hour_time >= 2 and range_hour_time < 4):
-                                store_over_work_money_temp.append('10,000')
+                                store_over_work_money_temp.append(10000)
                             elif (range_hour_time >= 4 and range_hour_time < 8):
-                                store_over_work_money_temp.append('20,000')
+                                store_over_work_money_temp.append(20000)
                             elif range_hour_time >= 8:
-                                store_over_work_money_temp.append('40,000')
+                                store_over_work_money_temp.append(40000)
                             else:
                                 pass
                         else:

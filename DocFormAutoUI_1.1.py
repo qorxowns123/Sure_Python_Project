@@ -8,6 +8,7 @@ class MyWindow(QMainWindow):
 
     # 년, 월, 시간, 분
     set_day_info = []
+    filename = ''
 
     def __init__(self):
         super().__init__()
@@ -225,7 +226,7 @@ class MyWindow(QMainWindow):
                     self.statusBar.showMessage('프로그램 종료 - 야근한 날이 없습니다')
                 else:
                     self.statusBar.showMessage('로그인 성공 - 엑셀 파일을 생성 중입니다...')
-                    class_xlsx.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money)
+                    self.filename = class_xlsx.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money, self.set_day_info)
                     self.statusBar.showMessage('프로그램 종료 - 경비보고서가 성공적으로 생성 되었습니다')
                     
             else:
@@ -233,8 +234,22 @@ class MyWindow(QMainWindow):
 
     def clicked_open_btn(self):
         #print('경비보고서 열기 버튼 클릭')
+
+        if not self.filename:
+            current_dir = os.getcwd()
+            file_list = os.listdir(current_dir)
+            file_list.sort()
+            for loopidx in range(file_list.__len__()):
+                curtext = file_list[loopidx]
+                if curtext.find('경비보고서'):
+                    self.filename = curtext
+                else:
+                    pass
+        else:
+            pass
+
         self.statusBar.showMessage('경비보고서.xlsx 파일을 실행합니다')
-        filepath = ".\\경비보고서.xlsx"
+        filepath = ".\\" + self.filename
         os.popen(filepath)
 
 if __name__ == "__main__":
