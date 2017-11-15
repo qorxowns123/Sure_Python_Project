@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 import Search_Hanbiro
 import Create_ExcelFile
 import os
+import re
 
 class MyWindow(QMainWindow):
 
@@ -208,10 +209,6 @@ class MyWindow(QMainWindow):
             class_xlsx = Create_ExcelFile.CreateExcelFile()
 
             [check_login, driver, errorflag] = class_hanbiro.search_hanbiro_main(self.G_User_ID.text(), self.G_User_PW.text())
-            '''
-            print(self.G_User_ID.text())
-            print(self.G_User_PW.text())
-            '''
 
             if errorflag == 2:
                 self.statusBar.showMessage('phantomjs.exe 파일이 실행파일과 같은 폴더에 위치해야만 합니다')
@@ -239,10 +236,14 @@ class MyWindow(QMainWindow):
             current_dir = os.getcwd()
             file_list = os.listdir(current_dir)
             file_list.sort()
+            # 정규표현식 사용
+            regex = re.compile("_경비보고서.xlsx")
             for loopidx in range(file_list.__len__()):
                 curtext = file_list[loopidx]
-                if curtext.find('경비보고서'):
+                mo = regex.search(curtext)
+                if mo != None:
                     self.filename = curtext
+                    break
                 else:
                     pass
         else:
