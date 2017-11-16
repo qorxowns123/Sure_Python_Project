@@ -17,7 +17,6 @@ class MyWindow(QMainWindow):
 
     def setupUI(self):
         self.setGeometry(800, 400, 385, 390)
-        self.setFixedSize(385, 390)
 
         self.setWindowTitle('경비보고서 자동생성')
 
