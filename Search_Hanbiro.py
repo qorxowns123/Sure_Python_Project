@@ -42,8 +42,11 @@ class SearchHanbiro:
             # print('로그인 성공!!')
             check_login = True
         else:
-            #print('로그인 실패!!')
-            pass
+            time.sleep(3)
+            if ((driver.current_url == login_adress[0]) or (driver.current_url == login_adress[1])):
+                check_login = True
+            else:
+                pass
 
         return (check_login, driver, errorflag)
 
