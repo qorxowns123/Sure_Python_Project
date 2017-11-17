@@ -8,7 +8,7 @@ import re
 class MyWindow(QMainWindow):
 
     # 년, 월, 시간, 분
-    set_day_info = []
+    set_day_info = ['2017', '01', '18', '0']
     filename = ''
 
     def __init__(self):
@@ -189,13 +189,13 @@ class MyWindow(QMainWindow):
         self.G_User_SetMinute.currentText() # 분
         '''
         # 년
-        self.set_day_info.append(self.G_User_SetYear.currentText())
+        self.set_day_info[0] = self.G_User_SetYear.currentText()
         # 월
-        self.set_day_info.append(self.G_User_SetMonth.currentText())
+        self.set_day_info[1] = self.G_User_SetMonth.currentText()
         # 시간
-        self.set_day_info.append(self.G_User_SetHour.currentText())
+        self.set_day_info[2] = self.G_User_SetHour.currentText()
         # 분
-        self.set_day_info.append(self.G_User_SetMinute.currentText())
+        self.set_day_info[3] = self.G_User_SetMinute.currentText()
         #print(self.Info)
 
         if not self.G_User_ID.text():
