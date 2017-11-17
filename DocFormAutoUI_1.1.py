@@ -18,7 +18,7 @@ class MyWindow(QMainWindow):
     def setupUI(self):
         self.setGeometry(800, 400, 385, 390)
 
-        self.setWindowTitle('경비보고서 자동생성')
+        self.setWindowTitle('야근없는 그날까지')
 
         #Loginfo group box
         self.U_LoginInfo = QGroupBox(self)
