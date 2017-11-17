@@ -176,9 +176,11 @@ class SearchHanbiro:
 
         # 본사에서 n시 이후 퇴근한 날
         for loopmdx in range(0, get_check_info.__len__()):
+            '''
             if not store_over_work_day_temp:
                 pass
             else:
+
                 store_over_work_day_temp.insert(0,get_check_info[loopmdx][0])
                 store_over_work_time_temp.insert(0, get_check_info[loopmdx][0])
                 store_over_work_money_temp.insert(0, get_check_info[loopmdx][0])
@@ -190,6 +192,7 @@ class SearchHanbiro:
                 store_over_work_day_temp = []
                 store_over_work_time_temp = []
                 store_over_work_money_temp = []
+            '''
 
             if get_check_info[loopmdx].__len__() == 1:
                 continue
@@ -228,6 +231,21 @@ class SearchHanbiro:
                         pass
                 else:
                     pass
+            if not store_over_work_day_temp:
+                pass
+            else:
+
+                store_over_work_day_temp.insert(0,get_check_info[loopmdx][0])
+                store_over_work_time_temp.insert(0, get_check_info[loopmdx][0])
+                store_over_work_money_temp.insert(0, get_check_info[loopmdx][0])
+
+                store_over_work_day.append(store_over_work_day_temp)
+                store_over_work_time.append(store_over_work_time_temp)
+                store_over_work_money.append(store_over_work_money_temp)
+
+                store_over_work_day_temp = []
+                store_over_work_time_temp = []
+                store_over_work_money_temp = []
 
         for looopqdx in range(0, store_over_work_time.__len__()):
             for loopwdx in range(1, store_over_work_time[looopqdx].__len__()):
