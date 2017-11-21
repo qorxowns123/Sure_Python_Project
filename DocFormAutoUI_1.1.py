@@ -210,7 +210,7 @@ class MyWindow(QMainWindow):
 
             [check_login, driver, errorflag] = class_hanbiro.search_hanbiro_main(self.G_User_ID.text(), self.G_User_PW.text())
 
-            if errorflag == 2:
+            if errorflag == True:
                 self.statusBar.showMessage('phantomjs.exe 파일이 실행파일과 같은 폴더에 위치해야만 합니다')
                 return
             else:

@@ -16,13 +16,13 @@ class SearchHanbiro:
         excutepath = os.getcwd()
         excutename = 'phantomjs.exe'
         excutepath = os.path.join(excutepath, excutename)
-        errorflag = 1
+        errorflag = False
         driver = webdriver
 
         try:
             driver = driver.PhantomJS(excutepath)
         except:
-            errorflag = 2
+            errorflag = True
             return (check_login, driver, errorflag)
 
         # 암묵적으로 웹 자원 로드를 위해 3초까지 기다려 준다.
@@ -64,12 +64,26 @@ class SearchHanbiro:
         calendar_address = 'http://suresofttech.hanbiro.net/groupware/?category=time&section=userCalendar'
 
         driver.get(calendar_address)
+        
+        # 웹페이지 소스 추출
+        get_html = driver.page_source
+        # HTML 소스 읽어오기
+        get_parser = BeautifulSoup(get_html, 'html.parser')
+        # 태그를 통한 현재 날짜 가져오기
+        get_tag_info = get_parser.find_all('b')
+        get_current_day = get_tag_info[0].text
+        set_current_day = input_year + '.' + input_day
         # 목록으로 보기
         driver.find_element_by_xpath('/html/body/table/tbody/tr/td/table[1]/tbody/tr/td[2]/button[1]').click()
-        # 년도 입력
-        driver.find_element_by_name('syear').send_keys(input_year)
-        # 월 입력
-        driver.find_element_by_name('smonth').send_keys(input_day)
+
+        if get_current_day != set_current_day:
+            # 년도 입력
+            driver.find_element_by_name('syear').send_keys(input_year)
+            # 월 입력
+            driver.find_element_by_name('smonth').send_keys(input_day)
+        else:
+            pass
+
         # 검색
         driver.find_element_by_xpath('//*[@id="monthTerm"]/form/table/tbody/tr/td[2]/input').click()
 
