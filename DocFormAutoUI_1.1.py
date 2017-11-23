@@ -218,7 +218,9 @@ class MyWindow(QMainWindow):
 
             if check_login != False:
                 # 캘린더 로그인
-                [store_over_work_day, store_over_work_time, store_over_work_money] = class_hanbiro.enter_calendar(driver, self.set_day_info)
+                #[store_over_work_day, store_over_work_time, store_over_work_money] = class_hanbiro.enter_calendar(driver, self.set_day_info)
+                class_hanbiro.enter_calendar(driver, self.set_day_info)
+
                 if not store_over_work_day:
                     self.statusBar.showMessage('프로그램 종료 - 야근한 날이 없습니다')
                 else:
@@ -232,26 +234,30 @@ class MyWindow(QMainWindow):
     def clicked_open_btn(self):
         #print('경비보고서 열기 버튼 클릭')
 
-        if not self.filename:
-            current_dir = os.getcwd()
-            file_list = os.listdir(current_dir)
-            file_list.sort()
-            # 정규표현식 사용
-            regex = re.compile("_경비보고서.xlsx")
-            for loopidx in range(file_list.__len__()):
-                curtext = file_list[loopidx]
-                mo = regex.search(curtext)
-                if mo != None:
-                    self.filename = curtext
-                    break
-                else:
-                    pass
-        else:
-            pass
+        file_exist = False
+        current_dir = os.getcwd()
+        file_list = os.listdir(current_dir)
+        file_list.sort()
+        # 정규표현식 사용
+        regex = re.compile("_경비보고서.xlsx")
+        for loopidx in range(file_list.__len__()):
+            curtext = file_list[loopidx]
+            mo = regex.search(curtext)
+            if mo != None:
+                file_exist = True
+                self.filename = curtext
+                break
+            else:
+                pass
 
-        self.statusBar.showMessage('경비보고서.xlsx 파일을 실행합니다')
-        filepath = ".\\" + self.filename
-        os.popen(filepath)
+        if file_exist == True:
+            self.statusBar.showMessage('경비보고서.xlsx 파일을 실행합니다')
+            filepath = ".\\" + self.filename
+
+            os.popen(filepath)
+            file_exist = False
+        else:
+            self.statusBar.showMessage('경비보고서.xlsx 파일이 존재하지 않습니다')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

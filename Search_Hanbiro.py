@@ -101,9 +101,9 @@ class SearchHanbiro:
         # 브라우져 종료
         driver.close()
 
-        # 일자 저장
+        # 년/월/일자 저장
         store_day_info_temp = []
-        # 출근체크 저장
+        # 출근여부저장
         store_check_info_temp = []
         for loopjdx in range(0, get_day_info.__len__()):
             store_day_info_temp.append(get_day_info[loopjdx][1].text)
@@ -118,11 +118,12 @@ class SearchHanbiro:
         store_check_info = []
         temp_store_check_info = []
 
+
         week_mode = '주차'
         temp_store_day_info.append(week_mode)
         temp_store_check_info.append(week_mode)
 
-
+        # 주차로 나누기(일요일을 만나면 한 주로 설정)
         for looppdx in range(0, store_day_info_temp.__len__()):
             if store_day_info_temp[looppdx][12] == '일':
                 #cnt = cnt + 1
@@ -143,154 +144,139 @@ class SearchHanbiro:
         store_day_info.append(temp_store_day_info)
         store_check_info.append(temp_store_check_info)
 
-        '''
-        참고
-        store_day_info.__len__() # 리스트 전체 갯수
-        store_day_info[0].__len__() # 0번째 리스트 개수
-        '''
+        get_day_list = []
+        get_inTime_list = []
+        get_outTime_list = []
 
-        get_check_day = []
-        get_check_info = []
+        [get_day_list, get_inTime_list, get_outTime_list] = checkLeaveWork(store_day_info, store_check_info)
+        print(get_day_list)
+        print(get_inTime_list)
+        print(get_outTime_list)
+        checkOverWork(get_day_list, get_inTime_list, get_outTime_list)
 
-        # 정상퇴근 찾기
-        for loopkdx in range(0, store_check_info.__len__()):
 
-            get_check_day_temp = []
-            get_check_info_temp = []
+# end enter_calendar Func
 
-            get_check_day_temp.append(store_day_info[loopkdx][0])
-            get_check_info_temp.append(store_check_info[loopkdx][0])
-
-            get_check_day.append(get_check_day_temp)
-            get_check_info.append(get_check_info_temp)
-
-            for loopldx in range(1, store_check_info[loopkdx].__len__()):
-                cur_text = store_check_info[loopkdx][loopldx]
-                find_index = cur_text.find('정상퇴근')
-                if find_index != -1:
-                    # 정상퇴근을 찾으면 해당 날짜 저장
-                    get_check_day_temp.append(store_day_info[loopkdx][loopldx])
-                    # 해당 시간 저장
-                    check_word = cur_text[find_index + 4]
-                    if check_word == '-':
-                        cur_text = cur_text[find_index + 5:find_index + 10]
-                    else:
-                        cur_text = cur_text[find_index + 4:find_index + 9]
-                    get_check_info_temp.append(cur_text)
-                else:
-                    pass
-
-        store_over_work_day = []
-        store_over_work_time = []
-        store_over_work_money = []
-
-        store_over_work_day_temp = []
-        store_over_work_time_temp = []
-        store_over_work_money_temp = []
-
-        # 본사에서 n시 이후 퇴근한 날
-        for loopmdx in range(0, get_check_info.__len__()):
-            '''
-            if not store_over_work_day_temp:
+def checkOverWork(get_day_list, get_inTime_list, get_outTime_list):
+    for loopidx in range(0, get_day_list.__len__()):
+        for loopjdx in range(1, get_day_list[loopidx].__len__()):
+            # 휴무와 평일을 구분하여 야근시간 계산하기
+            day_text = get_day_list[loopidx][loopjdx]
+            find_holiday = day_text.find('휴무')
+            if find_holiday == -1:
+                # 평일인 경우
                 pass
             else:
+                # 주말인 경우
+                pass
 
-                store_over_work_day_temp.insert(0,get_check_info[loopmdx][0])
-                store_over_work_time_temp.insert(0, get_check_info[loopmdx][0])
-                store_over_work_money_temp.insert(0, get_check_info[loopmdx][0])
 
-                store_over_work_day.append(store_over_work_day_temp)
-                store_over_work_time.append(store_over_work_time_temp)
-                store_over_work_money.append(store_over_work_money_temp)
+def checkLeaveWork(store_day_info, store_check_info):
+    get_day_list = []
+    get_inTime_list = []
+    get_outTime_list = []
 
-                store_over_work_day_temp = []
-                store_over_work_time_temp = []
-                store_over_work_money_temp = []
-            '''
+    # 정상출근/지각, 정상퇴근 찾기
+    for loopkdx in range(0, store_check_info.__len__()):
 
-            if get_check_info[loopmdx].__len__() == 1:
-                continue
-            else:
-                for loopndx in range(1, get_check_info[loopmdx].__len__()):
-                    check_time = get_check_info[loopmdx][loopndx]  # '19:23'
-                    check_hour_time = check_time[0:2]  # '19'
-                    check_hour_time = int(check_hour_time)  # 19
+        # 일자 저장
+        get_day_list_temp = []
+        # 출근 시간 저장(지각 포함)
+        get_inTime_list_temp = []
+        # 퇴근 시간 저장
+        get_outTime_list_temp = []
 
-                    check_min_time = check_time[3:]  # '23'
-                    check_min_time = int(check_min_time)  # '23
+        get_day_list_temp.append(store_day_info[loopkdx][0])
+        get_inTime_list_temp.append(store_check_info[loopkdx][0])
+        get_outTime_list_temp.append(store_check_info[loopkdx][0])
 
-                    # 야근 했다면..
-                    if over_work_hour_time < check_hour_time:
-                        range_hour_time = check_hour_time - over_work_hour_time
-                        range_min_time = check_min_time - over_work_min_time
-                        if range_min_time < 0:
-                            range_hour_time = range_hour_time -1
+        # 아래 for문에서 파싱한 내용 넣기
+        get_day_list.append(get_day_list_temp)
+        get_inTime_list.append(get_inTime_list_temp)
+        get_outTime_list.append(get_outTime_list_temp)
+
+        for loopldx in range(1, store_check_info[loopkdx].__len__()):
+            cur_text = store_check_info[loopkdx][loopldx]
+            get_text = ''
+            find_inTime = cur_text.find('정상출근')
+            find_lateTime = cur_text.find('지각')
+            # 정상 출근이나 지각을 한 경우 정상퇴근 찾기
+            if (find_inTime != -1) or (find_lateTime != -1):
+                find_outTime = cur_text.find('정상퇴근')
+                find_earlyTime = cur_text.find('조퇴')
+                if (find_outTime != -1) or (find_earlyTime != -1):
+                    # 휴무찾기
+                    find_workoffTime = cur_text.find('휴무')
+                    # 휴무라면..
+                    if find_workoffTime != -1:
+                        # 정상 출근이라면..
+                        if find_inTime != -1:
+                            get_text = returnCurText(cur_text, find_inTime, '정상출근')
+                            get_inTime_list_temp.append(get_text)
                         else:
-                            pass
-                        if range_hour_time >= 2:
-                            store_over_work_day_temp.append(get_check_info[loopmdx][loopndx])  # 시간
-                            store_over_work_time_temp.append(get_check_day[loopmdx][loopndx]) # 날짜
+                            # 지각이라면..
+                            get_text = returnCurText(cur_text, find_lateTime, '지각')
+                            get_inTime_list_temp.append(get_text)
 
-                            if (range_hour_time >= 2 and range_hour_time < 4):
-                                store_over_work_money_temp.append(10000)
-                            elif (range_hour_time >= 4 and range_hour_time < 8):
-                                store_over_work_money_temp.append(20000)
-                            elif range_hour_time >= 8:
-                                store_over_work_money_temp.append(40000)
+                        # 정상 퇴근이라면...
+                        if find_outTime != -1:
+                            get_text = returnCurText(cur_text, find_outTime, '정상퇴근')
+                            get_outTime_list_temp.append(get_text)
+                            get_text = store_day_info[loopkdx][loopldx] + ' / 휴무'
+                            get_day_list_temp.append(get_text)
+                        else:
+                            # 조퇴라면...
+                            get_text = returnCurText(cur_text, find_earlyTime, '조퇴')
+                            get_outTime_list_temp.append(get_text)
+                            get_text = store_day_info[loopkdx][loopldx] + ' / 휴무'
+                            get_day_list_temp.append(get_text)
+                    # 휴무가 아니라면..
+                    else:
+                        if find_earlyTime != -1:
+                            # 평일에 조퇴는 야근이 아니므로 패스
+                            continue
+                        else:
+                            # 정상 출근이라면..
+                            if find_inTime != -1:
+                                get_text = returnCurText(cur_text, find_inTime, '정상출근')
+                                get_inTime_list_temp.append(get_text)
                             else:
-                                pass
-                        else:
-                            pass
-                    else:
-                        pass
+                                # 지각이라면..
+                                get_text = returnCurText(cur_text, find_lateTime, '지각')
+                                get_inTime_list_temp.append(get_text)
+
+                            # 정상퇴근
+                            get_text = returnCurText(cur_text, find_outTime, '정상퇴근')
+                            get_outTime_list_temp.append(get_text)
+                            get_day_list_temp.append(store_day_info[loopkdx][loopldx])
                 else:
-                    pass
-            if not store_over_work_day_temp:
-                pass
+                    # 퇴근시간이 없으므로 넘어가기
+                    continue
             else:
+                # 정상출근이나 지각을 하지 않았으므로, 넘어가기
+                continue
 
-                store_over_work_day_temp.insert(0,get_check_info[loopmdx][0])
-                store_over_work_time_temp.insert(0, get_check_info[loopmdx][0])
-                store_over_work_money_temp.insert(0, get_check_info[loopmdx][0])
-
-                store_over_work_day.append(store_over_work_day_temp)
-                store_over_work_time.append(store_over_work_time_temp)
-                store_over_work_money.append(store_over_work_money_temp)
-
-                store_over_work_day_temp = []
-                store_over_work_time_temp = []
-                store_over_work_money_temp = []
-
-        for looopqdx in range(0, store_over_work_time.__len__()):
-            for loopwdx in range(1, store_over_work_time[looopqdx].__len__()):
-                fix_text = store_over_work_time[looopqdx][loopwdx]
-                fix_text = fix_text[5:] # 01-06 (수)
-                fix_text = fix_text[0:5]
-                fix_text = fix_text[0:2] + '월' + fix_text[3:5] + '일'
-                if fix_text == '월일':
-                    pass
-                else:
-                    store_over_work_time[looopqdx][loopwdx] = fix_text
-
-        return (store_over_work_day, store_over_work_time, store_over_work_money)
+    return (get_day_list, get_inTime_list, get_outTime_list)
 
 
 
-'''
-# 메인
-if __name__  == "__main__":
-    class_hanbiro = SearchHanbiro()
-    class_createexcelfile = Create_ExcelFile.CreateExcelFile()
 
-    [check_login, driver] = class_hanbiro.search_hanbiro_main('tjback123', 'wkfmqks0047')
+def returnCurText(cur_text, find_index, check_mode):
+    set_index = 0
+    if (check_mode == '정상출근') or (check_mode == '정상퇴근'):
+        set_index = find_index + 4
+        check_word = cur_text[set_index]
+    else: # 지각 and 조퇴
+        set_index = find_index + 2
+        check_word = cur_text[set_index]
 
-    if check_login != False:
-        [store_over_work_day, store_over_work_time, store_over_work_money] = class_hanbiro.enter_calendar(driver, '2016', '03')
-        if not store_over_work_day:  # 조금 더 생각해 보기
-            print('야근한 날이 없습니다.')
-        else:
-            # 엑셀 파싱 함수넣기
-            class_createexcelfile.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money)
+    if check_word == '-':
+        cur_text = cur_text[set_index + 1:set_index + 6]
     else:
-        pass
-'''
+        cur_text = cur_text[set_index:set_index + 5]
+
+    return cur_text
+
+
+
+
