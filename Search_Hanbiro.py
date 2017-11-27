@@ -158,17 +158,37 @@ class SearchHanbiro:
 # end enter_calendar Func
 
 def checkOverWork(get_day_list, get_inTime_list, get_outTime_list):
+    setOverTimeList = []
     for loopidx in range(0, get_day_list.__len__()):
-        for loopjdx in range(1, get_day_list[loopidx].__len__()):
-            # 휴무와 평일을 구분하여 야근시간 계산하기
-            day_text = get_day_list[loopidx][loopjdx]
-            find_holiday = day_text.find('휴무')
-            if find_holiday == -1:
-                # 평일인 경우
-                pass
-            else:
-                # 주말인 경우
-                pass
+        tempList = []
+        tempList.append('주차')
+        if get_day_list[loopidx].__len__() == 1:
+            # ['주차']만 있을경우는 넘어가기
+            setOverTimeList.append(tempList)
+            continue
+        else:
+            for loopjdx in range(1, get_day_list[loopidx].__len__()):
+                # 휴무와 평일을 구분하여 야근시간 계산하기
+                day_text = get_day_list[loopidx][loopjdx]
+                find_holiday = day_text.find('휴무')
+                if find_holiday == -1:
+                    # 평일인 경우
+                    set_weekday(get_inTime_list, get_outTime_list, loopidx, loopjdx)
+                else:
+                    # 주말인 경우
+                    pass
+
+
+def set_weekday(get_inTime_list, get_outTime_list, loopidx, loopjdx):
+    startWorkTime = get_inTime_list[loopidx][loopjdx]
+    endWorkTime = get_outTime_list[loopidx][loopjdx]
+    # 시간 추출
+    startWorkTimeHour = int(startWorkTime[0:2])
+    endWorkTimeHour = int(endWorkTime[0:2])
+    # 분 추출
+    startWorkTimeMin = int(startWorkTime[3:])
+    endWorkTimeMin = int(endWorkTime[3:])
+
 
 
 def checkLeaveWork(store_day_info, store_check_info):
