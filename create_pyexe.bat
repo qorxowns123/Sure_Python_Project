@@ -1,0 +1,1 @@
+pyinstaller --onefile --clean -n AutoReport.exe "DocFormAutoUI_1.1.py"
