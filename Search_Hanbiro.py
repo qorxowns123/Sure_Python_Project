@@ -174,13 +174,13 @@ def checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_tim
                 find_holiday = day_text.find('휴무')
                 if find_holiday == -1:
                     # 평일인 경우
-                    set_weekday(over_work_time, get_outTime_list, loopidx, loopjdx)
+                    tempList.append(setWeekday(over_work_time, get_outTime_list, loopidx, loopjdx))
                 else:
                     # 주말인 경우
                     pass
 
 
-def set_weekday(over_work_time, get_outTime_list, loopidx, loopjdx):
+def setWeekday(over_work_time, get_outTime_list, loopidx, loopjdx):
     # 퇴근시간
     overWorkHour = int(over_work_time[0])
     overWorkMin = int(over_work_time[1])
@@ -190,6 +190,18 @@ def set_weekday(over_work_time, get_outTime_list, loopidx, loopjdx):
     setEndWorkHour = int(setEndWork[0:2])
     setEndWorkMin = int(setEndWork[3:])
 
+    hourRange = setEndWorkHour - overWorkHour
+    minRange = setEndWorkMin - overWorkMin
+
+    # 시간이 2시간 이상이고, 분이 음수가 아니라면...
+    if (hourRange >= 2) and (minRange > -1):
+        # 해당 야근시간을 리스트에 저장
+        pass
+    else:
+        # 야근이 아니라고 판단.. 빈 리스트 리턴 -> aaa = []
+        hourRange = []
+
+    return hourRange
 
 def checkLeaveWork(store_day_info, store_check_info):
     get_day_list = []
@@ -277,8 +289,6 @@ def checkLeaveWork(store_day_info, store_check_info):
                 continue
 
     return (get_day_list, get_inTime_list, get_outTime_list)
-
-
 
 
 def returnCurText(cur_text, find_index, check_mode):
