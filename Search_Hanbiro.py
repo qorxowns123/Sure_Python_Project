@@ -51,14 +51,15 @@ class SearchHanbiro:
         return (check_login, driver, errorflag)
 
     def enter_calendar(self, driver, set_day_info):
+        over_work_time = ['', '']
         # 년
         input_year = set_day_info[0]
         # 월
         input_day = set_day_info[1]
         # 시간
-        over_work_hour_time  = int(set_day_info[2])
+        over_work_time[0] = int(set_day_info[2])
         # 분
-        over_work_min_time = int(set_day_info[3])
+        over_work_time[1] = int(set_day_info[3])
 
         # 한비로 캘린더 주소
         calendar_address = 'http://suresofttech.hanbiro.net/groupware/?category=time&section=userCalendar'
@@ -152,12 +153,12 @@ class SearchHanbiro:
         print(get_day_list)
         print(get_inTime_list)
         print(get_outTime_list)
-        checkOverWork(get_day_list, get_inTime_list, get_outTime_list)
+        checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_time)
 
 
 # end enter_calendar Func
 
-def checkOverWork(get_day_list, get_inTime_list, get_outTime_list):
+def checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_time):
     setOverTimeList = []
     for loopidx in range(0, get_day_list.__len__()):
         tempList = []
@@ -173,22 +174,21 @@ def checkOverWork(get_day_list, get_inTime_list, get_outTime_list):
                 find_holiday = day_text.find('휴무')
                 if find_holiday == -1:
                     # 평일인 경우
-                    set_weekday(get_inTime_list, get_outTime_list, loopidx, loopjdx)
+                    set_weekday(over_work_time, get_outTime_list, loopidx, loopjdx)
                 else:
                     # 주말인 경우
                     pass
 
 
-def set_weekday(get_inTime_list, get_outTime_list, loopidx, loopjdx):
-    startWorkTime = get_inTime_list[loopidx][loopjdx]
-    endWorkTime = get_outTime_list[loopidx][loopjdx]
-    # 시간 추출
-    startWorkTimeHour = int(startWorkTime[0:2])
-    endWorkTimeHour = int(endWorkTime[0:2])
-    # 분 추출
-    startWorkTimeMin = int(startWorkTime[3:])
-    endWorkTimeMin = int(endWorkTime[3:])
-
+def set_weekday(over_work_time, get_outTime_list, loopidx, loopjdx):
+    # 퇴근시간
+    overWorkHour = int(over_work_time[0])
+    overWorkMin = int(over_work_time[1])
+    
+    # 야근시간
+    setEndWork = get_outTime_list[loopidx][loopjdx]
+    setEndWorkHour = int(setEndWork[0:2])
+    setEndWorkMin = int(setEndWork[3:])
 
 
 def checkLeaveWork(store_day_info, store_check_info):

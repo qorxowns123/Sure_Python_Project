@@ -199,7 +199,8 @@ class MyWindow(QMainWindow):
         #print(self.Info)
 
         if not self.G_User_ID.text():
-            self.statusBar.showMessage('아이디를 입력해주세요')
+            #self.statusBar.showMessage('아이디를 입력해주세요')
+            self.showdialog('아이디를 입력해주세요', 'Waring')
             return
         elif not self.G_User_PW.text():
             self.statusBar.showMessage('패스워드를 입력해주세요')
@@ -230,6 +231,13 @@ class MyWindow(QMainWindow):
                     
             else:
                 self.statusBar.showMessage('로그인 실패 - 아이디와 비밀번호를 다시 확인 바랍니다')
+
+    def showdialog(self, msglog, msgtype):
+        msg = QMessageBox()
+        msg.setWindowTitle(msgtype)
+        msg.setText(msglog)
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msg.exec()
 
     def clicked_open_btn(self):
         #print('경비보고서 열기 버튼 클릭')
