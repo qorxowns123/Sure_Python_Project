@@ -3,13 +3,11 @@ from PyQt5.QtWidgets import *
 import Search_Hanbiro
 import Create_ExcelFile
 import os
-import re
 
 class MyWindow(QMainWindow):
 
     # 년, 월, 시간, 분
-    set_day_info = ['2017', '01', '18', '0']
-    filename = ''
+    set_day_info = []
 
     def __init__(self):
         super().__init__()
@@ -18,7 +16,7 @@ class MyWindow(QMainWindow):
     def setupUI(self):
         self.setGeometry(800, 400, 385, 390)
 
-        self.setWindowTitle('야근없는 그날까지')
+        self.setWindowTitle('경비보고서 자동생성')
 
         #Loginfo group box
         self.U_LoginInfo = QGroupBox(self)
@@ -154,14 +152,12 @@ class MyWindow(QMainWindow):
         self.U_Get_GWHR_2.move(10, 305)
         self.U_Get_GWHR_2.resize(360, 62)
         self.U_Get_GWHR_2.setTitle("")
-
         #get active button
         self.G_Make_DocForm = QPushButton(self.U_Get_GWHR_2)
         self.G_Make_DocForm.move(20, 15)
         self.G_Make_DocForm.resize(140, 32)
         self.G_Make_DocForm.setText('경비보고서 생성')
         self.G_Make_DocForm.clicked.connect(self.clicked_make_btn)
-        self.G_Make_DocForm.setAutoDefault(True)
         
         #make activ button
         self.G_Open_DocForm = QPushButton(self.U_Get_GWHR_2)
@@ -169,15 +165,16 @@ class MyWindow(QMainWindow):
         self.G_Open_DocForm.resize(140, 32)
         self.G_Open_DocForm.setText('경비보고서 열기')
         self.G_Open_DocForm.clicked.connect(self.clicked_open_btn)
-        self.G_Open_DocForm.setAutoDefault(True)
 
         # StatusBar
         self.statusBar = QStatusBar(self)
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage('Ready')
 
+
     def clicked_make_btn(self):
         #print('경비보고서 생성 버튼 클릭')
+
         self.statusBar.showMessage('한비로에 로그인 시도 중...')
         '''
         self.G_User_ID.toPlainText() # 아이디
@@ -189,18 +186,17 @@ class MyWindow(QMainWindow):
         self.G_User_SetMinute.currentText() # 분
         '''
         # 년
-        self.set_day_info[0] = self.G_User_SetYear.currentText()
+        self.set_day_info.append(self.G_User_SetYear.currentText())
         # 월
-        self.set_day_info[1] = self.G_User_SetMonth.currentText()
+        self.set_day_info.append(self.G_User_SetMonth.currentText())
         # 시간
-        self.set_day_info[2] = self.G_User_SetHour.currentText()
+        self.set_day_info.append(self.G_User_SetHour.currentText())
         # 분
-        self.set_day_info[3] = self.G_User_SetMinute.currentText()
+        self.set_day_info.append(self.G_User_SetMinute.currentText())
         #print(self.Info)
 
         if not self.G_User_ID.text():
-            #self.statusBar.showMessage('아이디를 입력해주세요')
-            self.showdialog('아이디를 입력해주세요', 'Waring')
+            self.statusBar.showMessage('아이디를 입력해주세요')
             return
         elif not self.G_User_PW.text():
             self.statusBar.showMessage('패스워드를 입력해주세요')
@@ -211,7 +207,7 @@ class MyWindow(QMainWindow):
 
             [check_login, driver, errorflag] = class_hanbiro.search_hanbiro_main(self.G_User_ID.text(), self.G_User_PW.text())
 
-            if errorflag == True:
+            if errorflag == 2:
                 self.statusBar.showMessage('phantomjs.exe 파일이 실행파일과 같은 폴더에 위치해야만 합니다')
                 return
             else:
@@ -219,53 +215,54 @@ class MyWindow(QMainWindow):
 
             if check_login != False:
                 # 캘린더 로그인
-                #[store_over_work_day, store_over_work_time, store_over_work_money] = class_hanbiro.enter_calendar(driver, self.set_day_info)
-                class_hanbiro.enter_calendar(driver, self.set_day_info)
-
+                [store_over_work_day, store_over_work_time, store_over_work_money] = class_hanbiro.enter_calendar(driver, self.set_day_info)
                 if not store_over_work_day:
                     self.statusBar.showMessage('프로그램 종료 - 야근한 날이 없습니다')
                 else:
                     self.statusBar.showMessage('로그인 성공 - 엑셀 파일을 생성 중입니다...')
-                    self.filename = class_xlsx.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money, self.set_day_info)
+                    class_xlsx.create_xlsx(store_over_work_day, store_over_work_time, store_over_work_money)
                     self.statusBar.showMessage('프로그램 종료 - 경비보고서가 성공적으로 생성 되었습니다')
                     
             else:
                 self.statusBar.showMessage('로그인 실패 - 아이디와 비밀번호를 다시 확인 바랍니다')
 
-    def showdialog(self, msglog, msgtype):
-        msg = QMessageBox()
-        msg.setWindowTitle(msgtype)
-        msg.setText(msglog)
-        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        msg.exec()
-
     def clicked_open_btn(self):
         #print('경비보고서 열기 버튼 클릭')
+        self.statusBar.showMessage('경비보고서.xlsx 파일을 실행합니다')
 
-        file_exist = False
-        current_dir = os.getcwd()
-        file_list = os.listdir(current_dir)
-        file_list.sort()
-        # 정규표현식 사용
-        regex = re.compile("_경비보고서.xlsx")
-        for loopidx in range(file_list.__len__()):
-            curtext = file_list[loopidx]
-            mo = regex.search(curtext)
-            if mo != None:
-                file_exist = True
-                self.filename = curtext
-                break
-            else:
-                pass
+        filepath = ".\\*_*_경비보고서.xlsx"
+        os.popen(filepath)
 
-        if file_exist == True:
-            self.statusBar.showMessage('경비보고서.xlsx 파일을 실행합니다')
-            filepath = ".\\" + self.filename
+    def showWarningDialog(self, strMsg):
+        msgWarning = QMessageBox()
+        msgWarning.setIcon(QMessageBox.Warning)
+        msgWarning.setText(strMsg)
+        msgWarning.setWindowTitle("주의")
+        msgWarning.setStandardButtons(QMessageBox.Ok)
+        msgWarning.exec_()
 
-            os.popen(filepath)
-            file_exist = False
-        else:
-            self.statusBar.showMessage('경비보고서.xlsx 파일이 존재하지 않습니다')
+    def showInfoDialog(self, strMsg):
+        msgInfo = QMessageBox()
+        msgInfo.setIcon(QMessageBox.Information)
+        msgInfo.setText(strMsg)
+        msgInfo.setWindowTitle("정보")
+        msgInfo.setStandardButtons(QMessageBox.Ok)
+        msgInfo.exec_()
+
+    def showCriticalDialog(self, strMsg):
+        msgCrtc = QMessageBox()
+        msgCrtc.setIcon(QMessageBox.Critical)
+        msgCrtc.setText(strMsg)
+        msgCrtc.setWindowTitle("경고")
+        msgCrtc.setStandardButtons(QMessageBox.Ok)
+        msgCrtc.exec_()
+
+    def showSearchFileDialog(self):
+        os.system('explorer.exe "D:\"')
+
+
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
