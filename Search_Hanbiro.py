@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import time
 import os
 
+printCheck = True
+
 class SearchHanbiro:
     def search_hanbiro_main(self, sure_id, sure_pw):
         # 한비로 로그인 주소
@@ -39,7 +41,6 @@ class SearchHanbiro:
         time.sleep(3)
 
         if ((driver.current_url == login_adress[0]) or (driver.current_url == login_adress[1])):
-            # print('로그인 성공!!')
             check_login = True
         else:
             time.sleep(3)
@@ -145,18 +146,42 @@ class SearchHanbiro:
         store_day_info.append(temp_store_day_info)
         store_check_info.append(temp_store_check_info)
 
-        get_day_list = []
-        get_inTime_list = []
-        get_outTime_list = []
-
         [get_day_list, get_inTime_list, get_outTime_list] = checkLeaveWork(store_day_info, store_check_info)
+        '''
         print(get_day_list)
         print(get_inTime_list)
         print(get_outTime_list)
-        checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_time)
-
-
+        '''
+        # 야근한 날 체크
+        OverWorkTimeList = checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_time)
+        TimetoMoneyList = overTimetoMoney(OverWorkTimeList)
+        return (TimetoMoneyList)
 # end enter_calendar Func
+
+
+def overTimetoMoney(overWorkTimeList):
+    setTimetoMoney = []
+    for loopidx in range(0, overWorkTimeList.__len__()):
+        tempList = []
+        tempList.append('주차')
+        if overWorkTimeList[loopidx].__len__() == 1:
+            # ['주차']만 있을경우는 넘어가기
+            setTimetoMoney.append(tempList)
+            continue
+        else:
+            for loopjdx in range(1, overWorkTimeList[loopidx].__len__()):
+                getTime = overWorkTimeList[loopidx][loopjdx]
+                if getTime >= 2 and getTime < 4:
+                    tempList.append(10000)
+                elif getTime >= 4 and getTime < 8:
+                    tempList.append(20000)
+                elif getTime >= 8:
+                    tempList.append(80000)
+                else:
+                    pass
+            setTimetoMoney.append(tempList)
+    print(setTimetoMoney)
+    return (setTimetoMoney)
 
 def checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_time):
     setOverTimeList = []
@@ -172,34 +197,109 @@ def checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_tim
                 # 휴무와 평일을 구분하여 야근시간 계산하기
                 day_text = get_day_list[loopidx][loopjdx]
                 find_holiday = day_text.find('휴무')
+                find_overNight = day_text.find('자정후퇴근')
+                # 평일인 경우
                 if find_holiday == -1:
-                    # 평일인 경우
-                    tempList.append(setWeekday(over_work_time, get_outTime_list, loopidx, loopjdx))
+                    # 야근한 날이 없을 경우
+                    if setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopjdx, find_overNight) == -1:
+                        pass
+                    # 야근한 날이 있을 경우
+                    else:
+                        tempList.append(setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopjdx, find_overNight))
+                # 주말인 경우
                 else:
-                    # 주말인 경우
-                    pass
+                    # 야근한 날이 없을 경우
+                    if setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, find_overNight) == -1:
+                        pass
+                    # 야근한 날이 있을 경우
+                    else:
+                        tempList.append(setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, find_overNight))
+
+            setOverTimeList.append(tempList)
+
+    return (setOverTimeList)
 
 
-def setWeekday(over_work_time, get_outTime_list, loopidx, loopjdx):
-    # 퇴근시간
+
+def setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, overNight):
+    # 출근 시간
+    setStartWork = get_inTime_list[loopidx][loopjdx]
+    # 야근(퇴근) 시간
+    setEndWork = get_outTime_list[loopidx][loopjdx]
+    
+    # 출근시간을 시/분으로 나누기
+    setStartWorkHour = int(setStartWork[0:2])
+    setStartWorkMin = int(setStartWork[3:])
+
+    # 야근(퇴근)시간을 시/분으로 나누기
+    setEndWorkHour = int(setEndWork[0:2])
+    setEndWorkMin = int(setEndWork[3:])
+
+    # 자정후 퇴근이라면...
+    if overNight != -1:
+        # 자정후 퇴근한것이 진짜 맞다면...
+        if setStartWorkHour > setEndWorkHour:
+            setEndWorkHour = 24
+            setEndWorkMin = 0
+        else:
+            pass
+    else:
+        pass
+
+    hourRange = setEndWorkHour - setStartWorkHour
+    minRange = setEndWorkMin - setStartWorkMin
+
+    # 시간이 2시간 이상이고, 분이 음수가 아니라면...
+    if (hourRange > 2) and (minRange <= -1):
+        # 해당 야근시간을 리스트에 저장
+        hourRange = hourRange - 1
+    elif ((hourRange <= 2) and (minRange <= -1)) or (hourRange <= 1):
+        # 야근이 아니라고 판단...
+        hourRange = -1
+    else:
+        pass
+
+    return hourRange
+
+
+def setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopjdx, overNight):
+    # 퇴근설정시간
     overWorkHour = int(over_work_time[0])
     overWorkMin = int(over_work_time[1])
     
-    # 야근시간
+    # 야근시간을 시/분으로 나누기
     setEndWork = get_outTime_list[loopidx][loopjdx]
     setEndWorkHour = int(setEndWork[0:2])
     setEndWorkMin = int(setEndWork[3:])
+
+    # 출근시간을 시/분으로 나누기
+    setStartWork = get_inTime_list[loopidx][loopjdx]
+    setStartWorkHour = int(setStartWork[0:2])
+    setStartWorkMin = int(setStartWork[3:])
+
+    # 자정후 퇴근이라면...
+    if overNight != -1:
+        # 자정후 퇴근한것이 진짜 맞다면...
+        if setStartWorkHour > setEndWorkHour:
+            setEndWorkHour = 24
+            setEndWorkMin = 0
+        else:
+            pass
+    else:
+        pass
 
     hourRange = setEndWorkHour - overWorkHour
     minRange = setEndWorkMin - overWorkMin
 
     # 시간이 2시간 이상이고, 분이 음수가 아니라면...
-    if (hourRange >= 2) and (minRange > -1):
+    if (hourRange > 2) and (minRange <= -1):
         # 해당 야근시간을 리스트에 저장
-        pass
+        hourRange = hourRange - 1
+    elif ((hourRange <= 2) and (minRange <= -1)) or (hourRange <= 1):
+        # 야근이 아니라고 판단...
+        hourRange = -1
     else:
-        # 야근이 아니라고 판단.. 빈 리스트 리턴 -> aaa = []
-        hourRange = []
+        pass
 
     return hourRange
 
@@ -236,6 +336,7 @@ def checkLeaveWork(store_day_info, store_check_info):
             if (find_inTime != -1) or (find_lateTime != -1):
                 find_outTime = cur_text.find('정상퇴근')
                 find_earlyTime = cur_text.find('조퇴')
+                find_overTime = cur_text.find('자정후퇴근')
                 if (find_outTime != -1) or (find_earlyTime != -1):
                     # 휴무찾기
                     find_workoffTime = cur_text.find('휴무')
@@ -254,7 +355,12 @@ def checkLeaveWork(store_day_info, store_check_info):
                         if find_outTime != -1:
                             get_text = returnCurText(cur_text, find_outTime, '정상퇴근')
                             get_outTime_list_temp.append(get_text)
-                            get_text = store_day_info[loopkdx][loopldx] + ' / 휴무'
+                            # 자정후 퇴근이라면...
+                            if find_overTime != -1:
+                                get_text = store_day_info[loopkdx][loopldx] + ' / 휴무(자정후퇴근)'
+                            # 자정후 퇴근이 아니라면...
+                            else:
+                                get_text = store_day_info[loopkdx][loopldx] + ' / 휴무'
                             get_day_list_temp.append(get_text)
                         else:
                             # 조퇴라면...
@@ -280,7 +386,12 @@ def checkLeaveWork(store_day_info, store_check_info):
                             # 정상퇴근
                             get_text = returnCurText(cur_text, find_outTime, '정상퇴근')
                             get_outTime_list_temp.append(get_text)
-                            get_day_list_temp.append(store_day_info[loopkdx][loopldx])
+                                # 자정후 퇴근 이라면...
+                            if find_overTime != -1:
+                                get_day_list_temp.append(store_day_info[loopkdx][loopldx] + ' / 자정후퇴근')
+                                # 자정후 퇴근이 아니라면...
+                            else:
+                                get_day_list_temp.append(store_day_info[loopkdx][loopldx])
                 else:
                     # 퇴근시간이 없으므로 넘어가기
                     continue
