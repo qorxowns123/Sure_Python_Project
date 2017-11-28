@@ -18,14 +18,8 @@ class SearchHanbiro:
         excutepath = os.getcwd()
         excutename = 'phantomjs.exe'
         excutepath = os.path.join(excutepath, excutename)
-        errorflag = False
-        driver = webdriver
+        driver = webdriver.PhantomJS(excutepath)
 
-        try:
-            driver = driver.PhantomJS(excutepath)
-        except:
-            errorflag = True
-            return (check_login, driver, errorflag)
 
         # 암묵적으로 웹 자원 로드를 위해 3초까지 기다려 준다.
         driver.implicitly_wait(3)
@@ -49,7 +43,7 @@ class SearchHanbiro:
             else:
                 pass
 
-        return (check_login, driver, errorflag)
+        return (check_login, driver)
 
     def enter_calendar(self, driver, set_day_info):
         over_work_time = ['', '']
