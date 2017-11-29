@@ -17,7 +17,7 @@ class MyWindow(QMainWindow):
     def setupUI(self):
         self.setGeometry(800, 400, 385, 390)
 
-        self.setWindowTitle('야근없는 그날까지')
+        self.setWindowTitle('야근없는그날까지')
 
         #Loginfo group box
         self.U_LoginInfo = QGroupBox(self)
@@ -69,7 +69,8 @@ class MyWindow(QMainWindow):
             year_text = str(year_num)
             self.G_User_SetYear.addItem(year_text)
 
-        self.G_User_SetYear.setCurrentText("2017")
+        now = date.today()
+        self.G_User_SetYear.setCurrentText(str(now.year))
 
         #DateInfo month
         self.G_User_SetMonth = QComboBox(self.U_SetDate)
@@ -86,6 +87,8 @@ class MyWindow(QMainWindow):
             else:
                 month_text = str(month_num)
             self.G_User_SetMonth.addItem(month_text)
+
+        self.G_User_SetMonth.setCurrentText(str(now.month))
 
         #Date year label
         self.U_SetYear = QLabel(self.U_SetDate)
@@ -159,6 +162,7 @@ class MyWindow(QMainWindow):
         self.G_Make_DocForm.resize(140, 32)
         self.G_Make_DocForm.setText('경비보고서 생성')
         self.G_Make_DocForm.clicked.connect(self.clicked_make_btn)
+        self.G_Make_DocForm.setAutoDefault(True)
         
         #make activ button
         self.G_Open_DocForm = QPushButton(self.U_Get_GWHR_2)
@@ -166,6 +170,8 @@ class MyWindow(QMainWindow):
         self.G_Open_DocForm.resize(140, 32)
         self.G_Open_DocForm.setText('경비보고서 열기')
         self.G_Open_DocForm.clicked.connect(self.clicked_open_btn)
+        self.G_Open_DocForm.setAutoDefault(True)
+
 
         # StatusBar
         self.statusBar = QStatusBar(self)
@@ -210,7 +216,7 @@ class MyWindow(QMainWindow):
 
             if check_login != False:
                 # 캘린더 로그인
-                [TimetoMoneyList]= class_hanbiro.enter_calendar(driver, self.set_day_info)
+                TimetoMoneyList = class_hanbiro.enter_calendar(driver, self.set_day_info)
                 if not TimetoMoneyList:
                     self.statusBar.showMessage('프로그램 종료 - 야근한 날이 없습니다')
                     showInfoDialog('야근한 날이 없습니다')
