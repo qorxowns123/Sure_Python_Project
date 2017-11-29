@@ -64,19 +64,16 @@ def MainFormSetFunc(worksheet, numric_format, cell_format, TimetoMoneyList):
     loop_week = TimetoMoneyList.__len__()
     for loopidx in range(0, loop_week):
         getSum = 0
-        if TimetoMoneyList[loopidx].__len__() == 1:
-            continue
-        else:
-            first_col = first_col + 3
-            for loopjdx in range(1, TimetoMoneyList[loopidx].__len__()):
-                getSum = getSum + TimetoMoneyList[loopidx][loopjdx]
+        first_col = first_col + 3
+        for loopjdx in range(0, TimetoMoneyList[loopidx].__len__()):
+            getSum = getSum + TimetoMoneyList[loopidx][loopjdx]
             
-            # 금액 총합
-            worksheet.write(3, first_col, getSum, numric_format)
-            getTotalSum = getTotalSum + getSum
-            # 야근 횟수
-            cntStr = str((TimetoMoneyList[loopidx].__len__() - 1)) + '회'
-            worksheet.write(3, first_col+1, cntStr, cell_format)
+        # 금액 총합
+        worksheet.write(3, first_col, getSum, numric_format)
+        getTotalSum = getTotalSum + getSum
+        # 야근 횟수
+        cntStr = str(TimetoMoneyList[loopidx].__len__()) + '회'
+        worksheet.write(3, first_col+1, cntStr, cell_format)
 
     # 항목별 총액
     worksheet.write(3, first_col+3, getTotalSum, numric_format)
@@ -86,22 +83,19 @@ def SubFormSetFunc(worksheet, cell_format, merge_format, menu_list, TimetoMoneyL
     last_col = 1
     loop_week = TimetoMoneyList.__len__()
     for loopidx in range(0, loop_week):
-        if TimetoMoneyList[loopidx].__len__() == 1:
-            continue
-        else:
-            first_col = first_col + 3
-            last_col = last_col + 3
-            worksheet.merge_range(0, first_col, 0, last_col, TimetoMoneyList[loopidx][0], merge_format)
-            worksheet.set_column(first_col, last_col, 15)
-            worksheet.write(1, first_col, menu_list[0], cell_format)
-            worksheet.write(1, first_col+1, menu_list[1], cell_format)
-            worksheet.write(1, last_col, menu_list[2], cell_format)
-            for loopjdx in range(2, 13):
-                worksheet.write(loopjdx, first_col, '', cell_format)
-                worksheet.write(loopjdx, first_col + 1, '', cell_format)
-                worksheet.write(loopjdx, last_col, '', cell_format)
+        first_col = first_col + 3
+        last_col = last_col + 3
+        worksheet.merge_range(0, first_col, 0, last_col, '주차', merge_format)
+        worksheet.set_column(first_col, last_col, 15)
+        worksheet.write(1, first_col, menu_list[0], cell_format)
+        worksheet.write(1, first_col+1, menu_list[1], cell_format)
+        worksheet.write(1, last_col, menu_list[2], cell_format)
+        for loopjdx in range(2, 13):
+            worksheet.write(loopjdx, first_col, '', cell_format)
+            worksheet.write(loopjdx, first_col + 1, '', cell_format)
+            worksheet.write(loopjdx, last_col, '', cell_format)
 
-            worksheet.write(0, last_col+1, '항목별 총액', merge_format)
-            worksheet.set_column(last_col+1, last_col+1, 20)
-            for loopjdx in range(1, 13):
-                worksheet.write(loopjdx, last_col+1, '', cell_format)
+        worksheet.write(0, last_col+1, '항목별 총액', merge_format)
+        worksheet.set_column(last_col+1, last_col+1, 20)
+        for loopjdx in range(1, 13):
+            worksheet.write(loopjdx, last_col+1, '', cell_format)

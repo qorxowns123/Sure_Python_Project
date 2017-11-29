@@ -68,15 +68,35 @@ class SearchHanbiro:
         # 태그를 통한 현재 날짜 가져오기
         get_tag_info = get_parser.find_all('b')
         get_current_day = get_tag_info[0].text
-        set_current_day = input_year + '.' + input_day
+        setCurYear = get_current_day[0:4]
+        setCurMonth = get_current_day[5:]
         # 목록으로 보기
         driver.find_element_by_xpath('/html/body/table/tbody/tr/td/table[1]/tbody/tr/td[2]/button[1]').click()
 
-        if get_current_day != set_current_day:
-            # 년도 입력
-            driver.find_element_by_name('syear').send_keys(input_year)
-            # 월 입력
-            driver.find_element_by_name('smonth').send_keys(input_day)
+
+        # return (TimetoMoneyList, checkDay)
+
+        # 년도 입력
+        checkDay = True
+
+        if input_year != setCurYear:
+            if input_year > setCurYear:
+                TimetoMoneyList = []
+                checkDay = False
+                return (TimetoMoneyList, checkDay)
+            else:
+                driver.find_element_by_name('syear').send_keys(input_year)
+        else:
+            pass
+
+        # 월 입력
+        if input_day != setCurMonth:
+            if input_day > setCurMonth:
+                TimetoMoneyList = []
+                checkDay = False
+                return (TimetoMoneyList, checkDay)
+            else:
+                driver.find_element_by_name('smonth').send_keys(input_day)
         else:
             pass
 
@@ -149,7 +169,7 @@ class SearchHanbiro:
         # 야근한 날 체크
         OverWorkTimeList = checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_time)
         TimetoMoneyList = overTimetoMoney(OverWorkTimeList)
-        return (TimetoMoneyList)
+        return (TimetoMoneyList, checkDay)
 # end enter_calendar Func
 
 
@@ -157,10 +177,10 @@ def overTimetoMoney(overWorkTimeList):
     setTimetoMoney = []
     for loopidx in range(0, overWorkTimeList.__len__()):
         tempList = []
-        tempList.append('주차')
+        #tempList.append('주차')
         if overWorkTimeList[loopidx].__len__() == 1:
             # ['주차']만 있을경우는 넘어가기
-            setTimetoMoney.append(tempList)
+            #setTimetoMoney.append(tempList)
             continue
         else:
             for loopjdx in range(1, overWorkTimeList[loopidx].__len__()):
@@ -174,7 +194,6 @@ def overTimetoMoney(overWorkTimeList):
                 else:
                     pass
             setTimetoMoney.append(tempList)
-    print(setTimetoMoney)
     return (setTimetoMoney)
 
 def checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_time):
@@ -194,20 +213,22 @@ def checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_tim
                 find_overNight = day_text.find('자정후퇴근')
                 # 평일인 경우
                 if find_holiday == -1:
-                    # 야근한 날이 없을 경우
-                    if setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopjdx, find_overNight) == -1:
+                    result = setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopjdx, find_overNight,get_day_list)
+                    if result == -1:
+                        # 야근한 날이 없을 경우
                         pass
-                    # 야근한 날이 있을 경우
                     else:
-                        tempList.append(setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopjdx, find_overNight))
+                        # 야근한 날이 있을 경우
+                        tempList.append(result)
                 # 주말인 경우
                 else:
-                    # 야근한 날이 없을 경우
-                    if setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, find_overNight) == -1:
+                    result = setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, find_overNight, get_day_list)
+                    if result == -1:
+                        # 야근한 날이 없을 경우
                         pass
-                    # 야근한 날이 있을 경우
                     else:
-                        tempList.append(setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, find_overNight))
+                        # 야근한 날이 있을 경우
+                        tempList.append(result)
 
             setOverTimeList.append(tempList)
 
@@ -215,7 +236,7 @@ def checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_tim
 
 
 
-def setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, overNight):
+def setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, overNight, get_day_list):
     # 출근 시간
     setStartWork = get_inTime_list[loopidx][loopjdx]
     # 야근(퇴근) 시간
@@ -228,6 +249,8 @@ def setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, overNight):
     # 야근(퇴근)시간을 시/분으로 나누기
     setEndWorkHour = int(setEndWork[0:2])
     setEndWorkMin = int(setEndWork[3:])
+
+    textTemp = get_day_list[loopidx][loopjdx]
 
     # 자정후 퇴근이라면...
     if overNight != -1:
@@ -243,20 +266,26 @@ def setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, overNight):
     hourRange = setEndWorkHour - setStartWorkHour
     minRange = setEndWorkMin - setStartWorkMin
 
+
     # 시간이 2시간 이상이고, 분이 음수가 아니라면...
     if (hourRange > 2) and (minRange <= -1):
         # 해당 야근시간을 리스트에 저장
         hourRange = hourRange - 1
+        textTemp = textTemp + ' ---- 야근(O)'
     elif ((hourRange <= 2) and (minRange <= -1)) or (hourRange <= 1):
         # 야근이 아니라고 판단...
         hourRange = -1
+        textTemp = textTemp + ' ---- 야근(X)'
+
     else:
+        textTemp = textTemp + ' ---- 야근(O)'
         pass
 
+    print(textTemp)
     return hourRange
 
 
-def setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopjdx, overNight):
+def setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopjdx, overNight, get_day_list):
     # 퇴근설정시간
     overWorkHour = int(over_work_time[0])
     overWorkMin = int(over_work_time[1])
@@ -270,6 +299,8 @@ def setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopj
     setStartWork = get_inTime_list[loopidx][loopjdx]
     setStartWorkHour = int(setStartWork[0:2])
     setStartWorkMin = int(setStartWork[3:])
+
+    textTemp = get_day_list[loopidx][loopjdx]
 
     # 자정후 퇴근이라면...
     if overNight != -1:
@@ -289,12 +320,16 @@ def setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopj
     if (hourRange > 2) and (minRange <= -1):
         # 해당 야근시간을 리스트에 저장
         hourRange = hourRange - 1
+        textTemp = textTemp + ' ---- 야근(O)'
     elif ((hourRange <= 2) and (minRange <= -1)) or (hourRange <= 1):
         # 야근이 아니라고 판단...
         hourRange = -1
+        textTemp = textTemp + ' ---- 야근(X)'
     else:
+        textTemp = textTemp + ' ---- 야근(O)'
         pass
 
+    print(textTemp)
     return hourRange
 
 def checkLeaveWork(store_day_info, store_check_info):

@@ -7,7 +7,7 @@ import os
 class MyWindow(QMainWindow):
 
     # 년, 월, 시간, 분
-    set_day_info = []
+    set_day_info = ['1111', '11', '11', '11']
 
     def __init__(self):
         super().__init__()
@@ -174,13 +174,13 @@ class MyWindow(QMainWindow):
 
     def clicked_make_btn(self):
         # 년
-        self.set_day_info.append(self.G_User_SetYear.currentText())
+        self.set_day_info[0] = self.G_User_SetYear.currentText()
         # 월
-        self.set_day_info.append(self.G_User_SetMonth.currentText())
+        self.set_day_info[1] = self.G_User_SetMonth.currentText()
         # 시간
-        self.set_day_info.append(self.G_User_SetHour.currentText())
+        self.set_day_info[2] = self.G_User_SetHour.currentText()
         # 분
-        self.set_day_info.append(self.G_User_SetMinute.currentText())
+        self.set_day_info[3] = self.G_User_SetMinute.currentText()
 
         if not self.G_User_ID.text():
             showWarningDialog('아이디를 입력해주세요')
@@ -202,19 +202,30 @@ class MyWindow(QMainWindow):
 
             if check_login != False:
                 # 캘린더 로그인
-                TimetoMoneyList = class_hanbiro.enter_calendar(driver, self.set_day_info)
+                [TimetoMoneyList, checkDay]= class_hanbiro.enter_calendar(driver, self.set_day_info)
+                if checkDay == False:
+                    self.statusBar.showMessage('프로그램 종료')
+                    showWarningDialog('현재 날짜보다 미래 날짜는 설정할 수 없습니다.')
+                    return
+                else:
+                    pass
+
                 if not TimetoMoneyList:
                     self.statusBar.showMessage('프로그램 종료 - 야근한 날이 없습니다')
                     showInfoDialog('야근한 날이 없습니다')
                 else:
                     filecheck = find_ExcelFile(self.set_day_info)
                     if filecheck == True:
-                        answer = showfileCheck('같은파일이 존재합니다. 계속하시겠습니까?')
-                        if answer == QMessageBox.Ok:
+                        answer = showQuestionDialog(self, '같은파일이 존재합니다. 계속하시겠습니까?')
+                        if answer == QMessageBox.Yes:
                             self.statusBar.showMessage('엑셀 파일을 생성 중입니다...')
                             self.filename = class_xlsx.create_xlsx(TimetoMoneyList, self.set_day_info)
                             self.statusBar.showMessage('프로그램 종료 - 경비보고서가 성공적으로 생성 되었습니다')
-                            showInfoDialog('경비보고서 생성 완료')
+                            answer = showQuestionDialog(self, '경비보고서가 생성되었습니다. 여시겠습니까?')
+                            if answer == QMessageBox.Yes:
+                                os.popen(self.filename)
+                            else:
+                                pass
                         else:
                             showInfoDialog('파일 생성 취소')
                     else:
@@ -228,7 +239,9 @@ class MyWindow(QMainWindow):
                 showInfoDialog('로그인 실패')
 
     def clicked_open_btn(self):
-        showSearchFileDialog(os.getcwd())
+        fileName = QFileDialog.getOpenFileName(self, "Open File", None, "Excel Files (*.xlsx)")
+        os.popen(fileName[0])
+
 
 def find_ExcelFile(set_day_info):
     filename = set_day_info[0] + '_' + set_day_info[1] + '_경비보고서.xlsx'
@@ -249,7 +262,7 @@ def showWarningDialog(strMsg):
    msgWarning = QMessageBox()
    msgWarning.setIcon(QMessageBox.Warning)
    msgWarning.setText(strMsg)
-   msgWarning.setWindowTitle("주의")
+   msgWarning.setWindowTitle("Warning")
    msgWarning.setStandardButtons(QMessageBox.Ok)
    msgWarning.exec_()
 
@@ -257,7 +270,7 @@ def showInfoDialog(strMsg):
     msgInfo = QMessageBox()
     msgInfo.setIcon(QMessageBox.Information)
     msgInfo.setText(strMsg)
-    msgInfo.setWindowTitle("정보")
+    msgInfo.setWindowTitle("Info")
     msgInfo.setStandardButtons(QMessageBox.Ok)
     msgInfo.exec_()
 
@@ -265,19 +278,15 @@ def showCriticalDialog(strMsg):
    msgCrtc = QMessageBox()
    msgCrtc.setIcon(QMessageBox.Critical)
    msgCrtc.setText(strMsg)
-   msgCrtc.setWindowTitle("경고")
+   msgCrtc.setWindowTitle("Error")
    msgCrtc.setStandardButtons(QMessageBox.Ok)
    msgCrtc.exec_()
 
-def showfileCheck(strMsg):
-    msgFile = QMessageBox()
-    msgFile.setIcon(QMessageBox.Information)
-    msgFile.setText(strMsg)
-    msgFile.setWindowTitle("정보")
-    msgFile.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-    msgFile.exec_()
+def showQuestionDialog(self, strMsg):
+    return QMessageBox.question(self, 'Question', strMsg, QMessageBox.Yes | QMessageBox.No)
 
 def showSearchFileDialog(filepath):
+    os.system('d:')
     os.chdir(filepath)
     os.system('explorer.exe')
 
