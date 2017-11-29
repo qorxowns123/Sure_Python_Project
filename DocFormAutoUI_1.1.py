@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 import Search_Hanbiro
 import Create_ExcelFile
 import os
+import subprocess
 from datetime import date
 
 class MyWindow(QMainWindow):
@@ -168,7 +169,7 @@ class MyWindow(QMainWindow):
         self.G_Open_DocForm = QPushButton(self.U_Get_GWHR_2)
         self.G_Open_DocForm.move(200, 15)
         self.G_Open_DocForm.resize(140, 32)
-        self.G_Open_DocForm.setText('경비보고서 열기')
+        self.G_Open_DocForm.setText('보고서 디렉토리 열기')
         self.G_Open_DocForm.clicked.connect(self.clicked_open_btn)
         self.G_Open_DocForm.setAutoDefault(True)
 
@@ -188,6 +189,8 @@ class MyWindow(QMainWindow):
         self.set_day_info[2] = self.G_User_SetHour.currentText()
         # 분
         self.set_day_info[3] = self.G_User_SetMinute.currentText()
+
+        #aaa = subprocess.check_output("TASKLIST /V", shell=False)
 
         checkDay = getToday(self.set_day_info)
         if checkDay == False:
@@ -252,7 +255,15 @@ class MyWindow(QMainWindow):
 
     def clicked_open_btn(self):
         fileName = QFileDialog.getOpenFileName(self, "Open File", None, "Excel Files (*.xlsx)")
-        os.popen(fileName[0])
+        try:
+            res = subprocess.Popen(fileName[0], shell=True, stdout=subprocess.PIPE, stderr = subprocess.PIPE)
+            [output, error] = res.communicate()
+            if error:
+                showCriticalDialog('현재 파일이 실행중입니다')
+            else:
+                pass
+        except:
+            pass
 
 
 def find_ExcelFile(set_day_info):
@@ -297,10 +308,6 @@ def showCriticalDialog(strMsg):
 def showQuestionDialog(self, strMsg):
     return QMessageBox.question(self, 'Question', strMsg, QMessageBox.Yes | QMessageBox.No)
 
-def showSearchFileDialog(filepath):
-    os.system('d:')
-    os.chdir(filepath)
-    os.system('explorer.exe')
 
 def getToday(set_day_info):
     now = date.today()
