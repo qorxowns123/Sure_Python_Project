@@ -73,30 +73,15 @@ class SearchHanbiro:
         # 목록으로 보기
         driver.find_element_by_xpath('/html/body/table/tbody/tr/td/table[1]/tbody/tr/td[2]/button[1]').click()
 
-
-        # return (TimetoMoneyList, checkDay)
-
         # 년도 입력
-        checkDay = True
-
         if input_year != setCurYear:
-            if input_year > setCurYear:
-                TimetoMoneyList = []
-                checkDay = False
-                return (TimetoMoneyList, checkDay)
-            else:
-                driver.find_element_by_name('syear').send_keys(input_year)
+            driver.find_element_by_name('syear').send_keys(input_year)
         else:
             pass
 
         # 월 입력
         if input_day != setCurMonth:
-            if input_day > setCurMonth:
-                TimetoMoneyList = []
-                checkDay = False
-                return (TimetoMoneyList, checkDay)
-            else:
-                driver.find_element_by_name('smonth').send_keys(input_day)
+            driver.find_element_by_name('smonth').send_keys(input_day)
         else:
             pass
 
@@ -169,7 +154,7 @@ class SearchHanbiro:
         # 야근한 날 체크
         OverWorkTimeList = checkOverWork(get_day_list, get_inTime_list, get_outTime_list, over_work_time)
         TimetoMoneyList = overTimetoMoney(OverWorkTimeList)
-        return (TimetoMoneyList, checkDay)
+        return (TimetoMoneyList)
 # end enter_calendar Func
 
 

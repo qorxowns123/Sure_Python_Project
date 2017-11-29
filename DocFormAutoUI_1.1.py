@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 import Search_Hanbiro
 import Create_ExcelFile
 import os
+from datetime import date
 
 class MyWindow(QMainWindow):
 
@@ -182,6 +183,13 @@ class MyWindow(QMainWindow):
         # 분
         self.set_day_info[3] = self.G_User_SetMinute.currentText()
 
+        checkDay = getToday(self.set_day_info)
+        if checkDay == False:
+            showWarningDialog('현재 날짜보다 미래 날짜는 설정할 수 없습니다')
+            return
+        else:
+            pass
+
         if not self.G_User_ID.text():
             showWarningDialog('아이디를 입력해주세요')
             return
@@ -202,14 +210,7 @@ class MyWindow(QMainWindow):
 
             if check_login != False:
                 # 캘린더 로그인
-                [TimetoMoneyList, checkDay]= class_hanbiro.enter_calendar(driver, self.set_day_info)
-                if checkDay == False:
-                    self.statusBar.showMessage('프로그램 종료')
-                    showWarningDialog('현재 날짜보다 미래 날짜는 설정할 수 없습니다.')
-                    return
-                else:
-                    pass
-
+                [TimetoMoneyList]= class_hanbiro.enter_calendar(driver, self.set_day_info)
                 if not TimetoMoneyList:
                     self.statusBar.showMessage('프로그램 종료 - 야근한 날이 없습니다')
                     showInfoDialog('야근한 날이 없습니다')
@@ -233,6 +234,11 @@ class MyWindow(QMainWindow):
                         self.filename = class_xlsx.create_xlsx(TimetoMoneyList, self.set_day_info)
                         self.statusBar.showMessage('프로그램 종료 - 경비보고서가 성공적으로 생성 되었습니다')
                         showInfoDialog('경비보고서 생성 완료')
+                        answer = showQuestionDialog(self, '경비보고서가 생성되었습니다. 여시겠습니까?')
+                        if answer == QMessageBox.Yes:
+                            os.popen(self.filename)
+                        else:
+                            pass
                     
             else:
                 self.statusBar.showMessage('로그인 실패 - 아이디와 패스워드를 확인바랍니다')
@@ -289,6 +295,20 @@ def showSearchFileDialog(filepath):
     os.system('d:')
     os.chdir(filepath)
     os.system('explorer.exe')
+
+def getToday(set_day_info):
+    now = date.today()
+    checkDay = True
+    if int(set_day_info[0]) > int(now.year):
+        # 미래이므로 종료
+        checkDay = False
+    elif (int(set_day_info[0]) == int(now.year)) and (int(set_day_info[1]) > int(now.month)):
+            # 역시 미래이므로 종료
+            checkDay = False
+    else:
+        pass
+
+    return (checkDay)
 
 
 if __name__ == "__main__":
