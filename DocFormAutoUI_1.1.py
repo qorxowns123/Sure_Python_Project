@@ -189,6 +189,8 @@ class MyWindow(QMainWindow):
         self.set_day_info[2] = self.G_User_SetHour.currentText()
         # 분
         self.set_day_info[3] = self.G_User_SetMinute.currentText()
+        printText = '=================' + self.set_day_info[0] + '년' + self.set_day_info[1] + '월' + '================='
+        print(printText)
 
         checkDay = getToday(self.set_day_info)
         if checkDay == False:
