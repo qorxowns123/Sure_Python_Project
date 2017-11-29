@@ -190,8 +190,6 @@ class MyWindow(QMainWindow):
         # 분
         self.set_day_info[3] = self.G_User_SetMinute.currentText()
 
-        #aaa = subprocess.check_output("TASKLIST /V", shell=False)
-
         checkDay = getToday(self.set_day_info)
         if checkDay == False:
             showWarningDialog('현재 날짜보다 미래 날짜는 설정할 수 없습니다')
@@ -229,9 +227,14 @@ class MyWindow(QMainWindow):
                         answer = showQuestionDialog(self, '같은파일이 존재합니다. 계속하시겠습니까?')
                         if answer == QMessageBox.Yes:
                             self.statusBar.showMessage('엑셀 파일을 생성 중입니다...')
-                            self.filename = class_xlsx.create_xlsx(TimetoMoneyList, self.set_day_info)
-                            self.statusBar.showMessage('프로그램 종료 - 경비보고서가 성공적으로 생성 되었습니다')
-                            answer = showQuestionDialog(self, '경비보고서가 생성되었습니다. 여시겠습니까?')
+                            try:
+                                self.filename = class_xlsx.create_xlsx(TimetoMoneyList, self.set_day_info)
+                                self.statusBar.showMessage('프로그램 종료 - 경비보고서가 성공적으로 생성 되었습니다')
+                                answer = showQuestionDialog(self, '경비보고서가 생성되었습니다. 여시겠습니까?')
+                            except:
+                                showCriticalDialog('해당 월의 경비보고서가 이미 실행중입니다.\n경비보고서를 닫고 다시 실행해주세요')
+                                self.statusBar.showMessage('Ready')
+                                return
                             if answer == QMessageBox.Yes:
                                 os.popen(self.filename)
                             else:
@@ -259,7 +262,8 @@ class MyWindow(QMainWindow):
             res = subprocess.Popen(fileName[0], shell=True, stdout=subprocess.PIPE, stderr = subprocess.PIPE)
             [output, error] = res.communicate()
             if error:
-                showCriticalDialog('현재 파일이 실행중입니다')
+                showCriticalDialog('해당 월의 경비보고서가 이미 실행중입니다.\n경비보고서를 닫고 다시 실행해주세요')
+                self.statusBar.showMessage('Ready')
             else:
                 pass
         except:
