@@ -1,1 +1,1 @@
-pyinstaller --onefile --clean -n AutoReport.exe "DocFormAutoUI_1.1.py"
+pyinstaller --onefile --clean --icon=DDakdaguri.ico -n AutoReport.exe "DocFormAutoUI_1.1.py"

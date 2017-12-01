@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import time
 import os
 
-printCheck = True
 
 class SearchHanbiro:
     def search_hanbiro_main(self, sure_id, sure_pw):
@@ -162,10 +161,7 @@ def overTimetoMoney(overWorkTimeList):
     setTimetoMoney = []
     for loopidx in range(0, overWorkTimeList.__len__()):
         tempList = []
-        #tempList.append('주차')
         if overWorkTimeList[loopidx].__len__() == 1:
-            # ['주차']만 있을경우는 넘어가기
-            #setTimetoMoney.append(tempList)
             continue
         else:
             for loopjdx in range(1, overWorkTimeList[loopidx].__len__()):
@@ -283,7 +279,6 @@ def setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopj
     # 출근시간을 시/분으로 나누기
     setStartWork = get_inTime_list[loopidx][loopjdx]
     setStartWorkHour = int(setStartWork[0:2])
-    setStartWorkMin = int(setStartWork[3:])
 
     textTemp = get_day_list[loopidx][loopjdx]
 

@@ -1,5 +1,6 @@
 import sys
 from PyQt5.QtWidgets import *
+from PyQt5 import Qt, QtCore, QtGui
 import Search_Hanbiro
 import Create_ExcelFile
 import os
@@ -17,12 +18,23 @@ class MyWindow(QMainWindow):
 
     def setupUI(self):
         self.setGeometry(800, 400, 385, 390)
-
         self.setWindowTitle('야근없는그날까지')
+        
+        # 도움말 열기
+        bar = self.menuBar()
+        helpOption = bar.addMenu('Help')
+        helpOpen = QAction("도움말열기", self)
+        helpOption.addAction(helpOpen)
+        helpOption.triggered.connect(self.processtrigger)
+
+        # GUI 아이콘 변경
+        sciptDir = os.path.dirname(os.path.realpath(__file__))
+        iconPath = sciptDir + os.path.sep + 'DDakdaguri.ico'
+        self.setWindowIcon(QtGui.QIcon(iconPath))
 
         #Loginfo group box
         self.U_LoginInfo = QGroupBox(self)
-        self.U_LoginInfo.move(10, 10)
+        self.U_LoginInfo.move(10, 30)
         self.U_LoginInfo.resize(360, 115)
         self.U_LoginInfo.setTitle('로그인 정보')
 
@@ -52,7 +64,7 @@ class MyWindow(QMainWindow):
         
         #DateInfo Group box
         self.U_SetDate = QGroupBox(self)
-        self.U_SetDate.move(10, 140)
+        self.U_SetDate.move(10, 150)
         self.U_SetDate.resize(360, 70)
         self.U_SetDate.setTitle('기간 설정하기')
         
@@ -189,6 +201,7 @@ class MyWindow(QMainWindow):
         self.set_day_info[2] = self.G_User_SetHour.currentText()
         # 분
         self.set_day_info[3] = self.G_User_SetMinute.currentText()
+        print('\n')
         printText = '=================' + self.set_day_info[0] + '년' + self.set_day_info[1] + '월' + '================='
         print(printText)
 
@@ -271,6 +284,10 @@ class MyWindow(QMainWindow):
         except:
             pass
 
+    def processtrigger(self):
+        filename = '20171113_SCRM 접속 방법_수정.htm'
+        os.popen(filename)
+
 
 def find_ExcelFile(set_day_info):
     filename = set_day_info[0] + '_' + set_day_info[1] + '_경비보고서.xlsx'
@@ -328,7 +345,6 @@ def getToday(set_day_info):
         pass
 
     return (checkDay)
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
