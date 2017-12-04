@@ -171,7 +171,7 @@ def overTimetoMoney(overWorkTimeList):
                 elif getTime >= 4 and getTime < 8:
                     tempList.append(20000)
                 elif getTime >= 8:
-                    tempList.append(80000)
+                    tempList.append(40000)
                 else:
                     pass
             setTimetoMoney.append(tempList)
@@ -252,14 +252,12 @@ def setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, overNight, g
     if (hourRange > 2) and (minRange <= -1):
         # 해당 야근시간을 리스트에 저장
         hourRange = hourRange - 1
-        textTemp = textTemp + ' ---- 야근(O)'
+        textTemp = textTemp + ' ---- 야근'
     elif ((hourRange <= 2) and (minRange <= -1)) or (hourRange <= 1):
         # 야근이 아니라고 판단...
         hourRange = -1
-        textTemp = textTemp + ' ---- 야근(X)'
-
     else:
-        textTemp = textTemp + ' ---- 야근(O)'
+        textTemp = textTemp + ' ---- 야근'
         pass
 
     print(textTemp)
@@ -300,13 +298,12 @@ def setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopj
     if (hourRange > 2) and (minRange <= -1):
         # 해당 야근시간을 리스트에 저장
         hourRange = hourRange - 1
-        textTemp = textTemp + ' ---- 야근(O)'
+        textTemp = textTemp + ' ---- 야근'
     elif ((hourRange <= 2) and (minRange <= -1)) or (hourRange <= 1):
         # 야근이 아니라고 판단...
         hourRange = -1
-        textTemp = textTemp + ' ---- 야근(X)'
     else:
-        textTemp = textTemp + ' ---- 야근(O)'
+        textTemp = textTemp + ' ---- 야근'
         pass
 
     print(textTemp)

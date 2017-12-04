@@ -29,7 +29,7 @@ class MyWindow(QMainWindow):
 
         # GUI 아이콘 변경
         sciptDir = os.path.dirname(os.path.realpath(__file__))
-        iconPath = sciptDir + os.path.sep + 'DDakdaguri.ico'
+        iconPath = sciptDir + os.path.sep + 'Report\\NoYagn.ico'
         self.setWindowIcon(QtGui.QIcon(iconPath))
 
         #Loginfo group box
