@@ -253,14 +253,13 @@ def setHoliday(get_inTime_list, get_outTime_list, loopidx, loopjdx, overNight, g
         # 해당 야근시간을 리스트에 저장
         hourRange = hourRange - 1
         textTemp = textTemp + ' ---- 야근'
+        print(textTemp)
     elif ((hourRange <= 2) and (minRange <= -1)) or (hourRange <= 1):
         # 야근이 아니라고 판단...
         hourRange = -1
     else:
         textTemp = textTemp + ' ---- 야근'
-        pass
-
-    print(textTemp)
+        print(textTemp)
     return hourRange
 
 
@@ -299,14 +298,13 @@ def setWeekday(get_inTime_list, over_work_time, get_outTime_list, loopidx, loopj
         # 해당 야근시간을 리스트에 저장
         hourRange = hourRange - 1
         textTemp = textTemp + ' ---- 야근'
+        print(textTemp)
     elif ((hourRange <= 2) and (minRange <= -1)) or (hourRange <= 1):
         # 야근이 아니라고 판단...
         hourRange = -1
     else:
         textTemp = textTemp + ' ---- 야근'
-        pass
-
-    print(textTemp)
+        print(textTemp)
     return hourRange
 
 def checkLeaveWork(store_day_info, store_check_info):
