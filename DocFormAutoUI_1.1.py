@@ -25,7 +25,7 @@ class MyWindow(QMainWindow):
         helpOption = bar.addMenu('Help')
         helpOpen = QAction("도움말열기", self)
         helpOption.addAction(helpOpen)
-        helpOption.triggered.connect(self.processtrigger)
+        helpOption.triggered.connect(self.helpTrigger)
 
         # GUI 아이콘 변경
         sciptDir = os.path.dirname(os.path.realpath(__file__))
@@ -284,8 +284,8 @@ class MyWindow(QMainWindow):
         except:
             pass
 
-    def processtrigger(self):
-        filename = '20171113_SCRM 접속 방법_수정.htm'
+    def helpTrigger(self):
+        filename = '.\\Report\\야근없는 그날까지 사용자 매뉴얼.htm'
         os.popen(filename)
 
 
