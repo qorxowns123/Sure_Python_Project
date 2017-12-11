@@ -29,7 +29,7 @@ class MyWindow(QMainWindow):
 
         # GUI 아이콘 변경
         sciptDir = os.path.dirname(os.path.realpath(__file__))
-        iconPath = sciptDir + os.path.sep + 'Report\\NoYagn.ico'
+        iconPath = sciptDir + os.path.sep + 'Configuration\\NoYagn.ico'
         self.setWindowIcon(QtGui.QIcon(iconPath))
 
         #Loginfo group box
@@ -285,7 +285,7 @@ class MyWindow(QMainWindow):
             pass
 
     def helpTrigger(self):
-        filename = '.\\Report\\야근없는 그날까지 사용자 매뉴얼.htm'
+        filename = '.\\Configuration\\야근없는 그날까지 사용자 매뉴얼.htm'
         os.popen(filename)
 
 
